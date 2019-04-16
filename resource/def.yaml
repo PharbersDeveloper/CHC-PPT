@@ -1,0 +1,49 @@
+storages:
+
+
+resources:
+
+
+models:
+
+
+services:
+
+
+functions:
+- name: BmCHC_PPTHandler
+  create: NewBmCHC_PPTHandler
+  daemons:
+  - BmMongodbDaemon
+  method: CHC_PPT
+  http: GET
+  args:
+  - name
+
+
+middlewares:
+- name: BmCheckTokenMiddleware
+  create: NewCheckTokenMiddleware
+  daemons:
+  - BmRedisDaemon
+  args:
+  - 192.168.100.116:9096
+
+panic:
+  name: BmCommonPanicHandle
+  create: NewCommonPanicHandle
+
+daemons:
+- name: BmMongodbDaemon
+  method: NewMongoDBDaemon
+  args:
+    host: 192.168.100.174
+    port: 27017
+    database: pharbers-max-bi
+- name: BmRedisDaemon
+  method: NewRedisDBDaemon
+  args:
+    host: 192.168.100.174
+    port: 6379
+    password:
+    database: 0
