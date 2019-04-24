@@ -1,33 +1,103 @@
 storages:
-
-
-resources:
-
-
-models:
-
-
-services:
-
-
-functions:
-- name: BmCHC_PPTHandler
-  create: NewBmCHC_PPTHandler
+- name: BmCreateSliderStorage
+  method: NewCreateSliderStorage
   daemons:
   - BmMongodbDaemon
-  method: CHC_PPT
-  http: GET
-  args:
-  - name
+- name: BmExcel2ChartStorage
+  method: NewExcel2ChartStorage
+  daemons:
+  - BmMongodbDaemon
+- name: BmExcel2PPTStorage
+  method: NewExcel2PPTStorage
+  daemons:
+  - BmMongodbDaemon
+- name: BmExcelPushStorage
+  method: NewExcelPushStorage
+  daemons:
+  - BmMongodbDaemon
+- name: BmRequestStorage
+  method: NewRequestStorage
+  daemons:
+  - BmMongodbDaemon
+- name: BmExportPPTStorage
+  method: NewExportPPTStorage
+  daemons:
+  - BmMongodbDaemon
+- name: BmPPTInformationStorage
+  method: NewPPTInformationStorage
+  daemons:
+  - BmMongodbDaemon
+- name: BmTextSetContentStorage
+  method: NewTextSetContentStorage
+  daemons:
+  - BmMongodbDaemon
+- name: BmChcpptStorage
+  method: NewChcpptStorage
+  daemons:
+  - BmMongodbDaemon
+- name: BmChcppttemplateStorage
+  method: NewChcppttemplateStorage
+  daemons:
+  - BmMongodbDaemon
+
+resources:
+- name: BmRequestResource
+  method: NewRequestResource
+  storages:
+  - BmRequestStorage
+  - BmCreateSliderStorage
+  - BmExcel2ChartStorage
+  - BmExcelPushStorage
+  - BmExportPPTStorage
+  - BmPPTInformationStorage 
+  - BmExcel2PPTStorage
+  - BmTextSetContentStorage
+- name: BmPPTInformationResource
+  method: NewPPTInformationResource
+  storages:
+  - BmRequestStorage
+  - BmPPTInformationStorage
+  - BmChcpptStorage
+  - BmChcppttemplateStorage
+
+models:
+- BmRequest
+- BmCreateSlider
+- BmExcel2Chart
+- BmExcel2PPT
+- BmExcelPush
+- BmExportPPT
+- BmTextSetContent
+- BmPPTInformation
+- BmChcppt
+- BmChcppttemplate
+
+services:
+- name: bm-request
+  model: BmRequest
+  resource: BmRequestResource
+- name: bm-pptinformation
+  model: BmPPTInformation
+  resource: BmPPTInformationResource
+
+functions:
+# - name: BmCHC_PPTHandler
+#   create: NewBmCHC_PPTHandler
+#   daemons:
+#   - BmMongodbDaemon
+#   method: CHC_PPT
+#   http: GET
+#   args:
+#   - name
 
 
 middlewares:
-- name: BmCheckTokenMiddleware
-  create: NewCheckTokenMiddleware
-  daemons:
-  - BmRedisDaemon
-  args:
-  - 192.168.100.116:9096
+# - name: BmCheckTokenMiddleware
+#   create: NewCheckTokenMiddleware
+#   daemons:
+#   - BmRedisDaemon
+#   args:
+#   - 192.168.100.116:9096
 
 panic:
   name: BmCommonPanicHandle
@@ -37,9 +107,9 @@ daemons:
 - name: BmMongodbDaemon
   method: NewMongoDBDaemon
   args:
-    host: 192.168.100.174
+    host: 192.168.100.176
     port: 27017
-    database: pharbers-max-bi
+    database: pharbers-aggrate-data
 - name: BmRedisDaemon
   method: NewRedisDBDaemon
   args:

@@ -18,16 +18,17 @@ func main() {
 	fmt.Println("pod archi begins")
 
 	fac := BmFactory.BmTable{}
+
 	var pod = BmMaxDefine.Pod{ Name: "swl test", Factory:fac }
 	pod.RegisterSerFromYAML("resource/def.yaml")
 
 	var bmRouter BmConfig.BmRouterConfig
 	bmRouter.GenerateConfig("BM_HOME")
-	// bmRouter.Port = "20190"
+	bmRouter.Port = "20199"
 	addr := bmRouter.Host + ":" + bmRouter.Port
 	fmt.Println("Listening on ", addr)
 	api := api2go.NewAPIWithResolver(version, &BmApiResolver.RequestURL{Addr: addr})
-	//pod.RegisterAllResource(api)
+	pod.RegisterAllResource(api)
 	pod.RegisterAllFunctions(version, api)
 	//pod.RegisterAllMiddleware(api)
 	handler := api.Handler().(*httprouter.Router)

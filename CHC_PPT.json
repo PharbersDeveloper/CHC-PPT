@@ -1,0 +1,172 @@
+{
+  "data": {
+    "attributes": {
+      "command": "GenPPT",
+      "jobid": "2b76e502-67c5-4523-92c5-3342a15dae31"
+    },
+    "id": "f8f0539b-a562-4d51-b67a-0d8a421911f3",
+    "type": "PhRequest"
+  }
+}
+{
+  "data": {
+    "attributes": {
+      "command": "CreateSlider",
+      "jobid": "2b76e502-67c5-4523-92c5-3342a15dae31"
+    },
+    "id": "644e4897-a4e0-4468-9d2f-8419428b08dd",
+    "relationships": {
+      "slider": {
+        "data": {
+          "id": "tmp_08d8363d-5abb-45c5-9a16-5905fe09fa25",
+          "type": "PhCreateSlider"
+        }
+      }
+    },
+    "type": "PhRequest"
+  },
+  "included": {
+    "attributes": {
+      "slider": 0,
+      "sliderType": "title",
+      "title": "口服降糖药市场CHC数据分析报告\n2018Q3YTD"
+    },
+    "id": "tmp_08d8363d-5abb-45c5-9a16-5905fe09fa25",
+    "type": "PhCreateSlider"
+  }
+}
+{
+  "data": {
+    "attributes": {
+      "command": "PushText",
+      "jobid": "2b76e502-67c5-4523-92c5-3342a15dae31"
+    },
+    "id": "f2f4f241-017a-428a-9bdd-e92ed777c974",
+    "relationships": {
+      "text": {
+        "data": {
+          "id": "tmp_9db785a7-462d-42a5-8b92-5762162bf73d",
+          "type": "PhTextPPT"
+        }
+      }
+    },
+    "type": "PhRequest"
+  },
+  "included": {
+    "attributes": {
+      "content": "#{##[#口服降糖药市场CHC数据分析报告\n2018Q3YTD#C#20Blue#]##P#center#}#",
+      "pos": [
+        892086,
+        2658273,
+        7550359,
+        690647
+      ],
+      "shapeType": "Rectangle",
+      "slider": 0
+    },
+    "id": "tmp_9db785a7-462d-42a5-8b92-5762162bf73d",
+    "type": "PhTextPPT"
+  }
+}
+{
+  "data": {
+    "attributes": {
+      "command": "Excel2Chart",
+      "jobid": "2b76e502-67c5-4523-92c5-3342a15dae31"
+    },
+    "id": "d27e778d-973c-4826-8ee7-573c9b1f649c",
+    "relationships": {
+      "e2c": {
+        "data": {
+          "id": "bb611104-3a2c-49fa-bd12-5d1fe1a6c730",
+          "type": "PhExcel2Chart"
+        }
+      }
+    },
+    "type": "PhRequest"
+  },
+  "included": {
+    "attributes": {
+      "chartType": "Stacked",
+      "css": "",
+      "name": "1",
+      "pos": [
+        892086,
+        2658273,
+        7550359,
+        690647
+      ],
+      "slider": 1
+    },
+    "id": "bb611104-3a2c-49fa-bd12-5d1fe1a6c730",
+    "type": "PhExcel2Chart"
+  }
+}
+{
+  "data": {
+    "attributes": {
+      "command": "ExcelPush",
+      "jobid": "71d87f12-53a0-404b-939a-d06518b77ea9"
+    },
+    "id": "26fabbb3-e78b-4152-8e2a-08b2bdf36366",
+    "relationships": {
+      "push": {
+        "data": {
+          "id": "4c6892db-74f7-43b0-bd25-b02d0e042fa4",
+          "type": "PhExcelPush"
+        }
+      }
+    },
+    "type": "PhRequest"
+  },
+  "included": {
+    "attributes": {
+      "cells": [
+        "#c#C6#s#col_common3*row_5#t#Number#v#",
+        "#c#E10#s#col_common1*row_5#t#Number#v#",
+        "#c#F7#s#col_common3*row_5#t#Number#v#",
+        "#c#B5#s#col_common1*row_5#t#Number#v#",
+        "#c#C3#s#col_common3*row_7#t#Number#v#",
+        "#c#C19#s#col_common3*row_5#t#Number#v#",
+        "#c#C8#s#col_common3*row_5#t#Number#v#",
+        "#c#G15#s#col_common3*row_5#t#Number#v#",
+        "#c#C7#s#col_common3*row_5#t#Number#v#"
+      ],
+      "name": "0d2d1e3f-299b-4fe1-8d17-4820a37bb03b"
+    },
+    "id": "4c6892db-74f7-43b0-bd25-b02d0e042fa4",
+    "type": "PhExcelPush"
+  }
+}
+{
+  "data": {
+    "attributes": {
+      "command": "Excel2PPT",
+      "jobid": "71d87f12-53a0-404b-939a-d06518b77ea9"
+    },
+    "id": "0310a1ae-a225-4971-b2a6-52260887cc18",
+    "relationships": {
+      "e2p": {
+        "data": {
+          "id": "2b0ece78-2688-4bd7-9d93-b430cfb62622",
+          "type": "PhExcel2PPT"
+        }
+      }
+    },
+    "type": "PhRequest"
+  },
+  "included": {
+    "attributes": {
+      "name": "0d2d1e3f-299b-4fe1-8d17-4820a37bb03b",
+      "pos": [
+        643884,
+        1352517,
+        7705035,
+        2438848
+      ],
+      "slider": 0
+    },
+    "id": "2b0ece78-2688-4bd7-9d93-b430cfb62622",
+    "type": "PhExcel2PPT"
+  }
+}

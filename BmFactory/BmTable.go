@@ -1,10 +1,10 @@
 package BmFactory
 
 import (
-	//"github.com/PharbersDeveloper/CHC-PPT/BmDataStorage"
+	"github.com/PharbersDeveloper/CHC-PPT/BmDataStorage"
 	"github.com/PharbersDeveloper/CHC-PPT/BmHandler"
-	//"github.com/PharbersDeveloper/CHC-PPT/BmModel"
-	//"github.com/PharbersDeveloper/CHC-PPT/BmResource"
+	"github.com/PharbersDeveloper/CHC-PPT/BmModel"
+	"github.com/PharbersDeveloper/CHC-PPT/BmResource"
 	"github.com/alfredyang1986/BmServiceDef/BmDaemons/BmRedis"
 	"github.com/alfredyang1986/BmServiceDef/BmDaemons/BmMongodb"
 	//"github.com/PharbersDeveloper/Max-Report/BmMiddleware"
@@ -13,15 +13,34 @@ import (
 type BmTable struct{}
 
 var BLACKMIRROR_MODEL_FACTORY = map[string]interface{}{
-	
+	"BmCreateSlider":                BmModel.CreateSlider{},
+	"BmExcel2Chart":                 BmModel.Excel2Chart{},
+	"BmExcel2PPT":                	 BmModel.Excel2PPT{},
+	"BmExcelPush":                   BmModel.ExcelPush{},
+	"BmRequest":                	 BmModel.Request{},
+	"BmExportPPT":                 	 BmModel.ExportPPT{},
+	"BmTextSetContent":              BmModel.TextSetContent{},
+	"BmPPTInformation":              BmModel.PPTInformation{},
+	"BmChcppt":                 BmModel.Chcppt{},
+	"BmChcppttemplate":                 BmModel.Chcppttemplate{},
 }
 
 var BLACKMIRROR_RESOURCE_FACTORY = map[string]interface{}{
-	
+	"BmRequestResource":               BmResource.RequestResource{},
+	"BmPPTInformationResource":               BmResource.PPTInformationResource{},
 }
 
 var BLACKMIRROR_STORAGE_FACTORY = map[string]interface{}{
-	
+	"BmCreateSliderStorage":               BmDataStorage.CreateSliderStorage{},
+	"BmExcel2ChartStorage":                BmDataStorage.Excel2ChartStorage{},
+	"BmExcel2PPTStorage":                BmDataStorage.Excel2PPTStorage{},
+	"BmExcelPushStorage":                BmDataStorage.ExcelPushStorage{},
+	"BmRequestStorage":                BmDataStorage.RequestStorage{},
+	"BmExportPPTStorage":                BmDataStorage.ExportPPTStorage{},
+	"BmTextSetContentStorage":                BmDataStorage.TextSetContentStorage{},
+	"BmPPTInformationStorage":                BmDataStorage.PPTInformationStorage{},
+	"BmChcpptStorage":                BmDataStorage.ChcpptStorage{},
+	"BmChcppttemplateStorage":                BmDataStorage.ChcppttemplateStorage{},
 }
 
 var BLACKMIRROR_MIDDLEWARE_FACTORY = map[string]interface{}{
