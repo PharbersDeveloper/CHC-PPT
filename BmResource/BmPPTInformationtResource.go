@@ -54,10 +54,12 @@ func (c PPTInformationResource) FindAll(r api2go.Request) (api2go.Responder, err
 	if len(results) <= 0{
 		return &Response{Res: results}, nil
 	}
-	// fmt.Println(results[0])
-	// return &Response{Res: results}, nil
 	var url string
-	uuid, _ := uuid.GenerateUUID()
+	uuid, err := uuid.GenerateUUID()
+	if err != nil {
+		fmt.Println(err)
+		return nil,err
+	}
 	url = c.GenPPT(uuid)
 	time.Sleep(2000)
 	result := results[0]
@@ -66,10 +68,8 @@ func (c PPTInformationResource) FindAll(r api2go.Request) (api2go.Responder, err
 	if result.Url == ""{
 		result.Url = url
 		for i,data:=range result.Data{
-			iscreat=0
-			fmt.Println(i)
+			iscreat=0	
 			if i==8{
-				fmt.Println(i)
 				url  = c.CreateSlider(uuid,"end","end",i)
 				break
 			}
@@ -79,7 +79,11 @@ func (c PPTInformationResource) FindAll(r api2go.Request) (api2go.Responder, err
 				temp=tempint.(string)
 			}
 			
-			tmp,_ := c.ChcppttemplateStorage.GetOne(temp)
+			tmp,err := c.ChcppttemplateStorage.GetOne(temp)
+			if err != nil {
+				fmt.Println(err)
+				return nil,err
+			}
 			Shapes:=tmp.Shapes
 		
 			contentsint,_:= dataMap["contents"]
@@ -89,7 +93,6 @@ func (c PPTInformationResource) FindAll(r api2go.Request) (api2go.Responder, err
 				var name string
 				var css string
 				var shapeType string
-				//var chartType string
 				var table string
 				var chart string
 				var pos []int
@@ -107,7 +110,6 @@ func (c PPTInformationResource) FindAll(r api2go.Request) (api2go.Responder, err
 						pos=append(pos,int(float))
 					}
 				}
-				fmt.Println(pos)
 				shapeTypeint:=Shape["shapeType"]
 				if shapeTypeint!=nil{
 					shapeType=shapeTypeint.(string)
@@ -134,11 +136,6 @@ func (c PPTInformationResource) FindAll(r api2go.Request) (api2go.Responder, err
 				if cssint!=nil{
 					css=cssint.(string)
 				}
-				// chartTypeint:=Shape["chartType"]
-				// if chartTypeint!=nil{
-				// 	chartType=chartTypeint.(string)
-				// }
-				fmt.Println(shapeType)
 				content,_:= contentint.(bson.M)
 				txtint:=content["txt"]
 				if txtint!=nil{
@@ -186,7 +183,6 @@ func (c PPTInformationResource) FindAll(r api2go.Request) (api2go.Responder, err
 								cells[t]=cells[t]+value
 							}
 						}
-						fmt.Println(coordinate,value)
 					}		
 					name=table+temp
 					url  = c.ExcelPush(uuid ,name,cells)
@@ -216,14 +212,12 @@ func (c PPTInformationResource) FindAll(r api2go.Request) (api2go.Responder, err
 								cells[t]=cells[t]+value
 							}
 						}
-						fmt.Println(coordinate,value)
 					}		
 					name=chart+temp	
 					url  = c.ExcelPush(uuid ,name,cells)
 					time.Sleep(3000)
 					url  = c.Excel2Chart(uuid,name,pos,i,shapeType,css)	
-					time.Sleep(3000)
-					
+					time.Sleep(3000)	
 				}
 			}
 		}
@@ -231,121 +225,6 @@ func (c PPTInformationResource) FindAll(r api2go.Request) (api2go.Responder, err
 		_= c.PPTInformationStorage.Update(*result)
 	}
 	return &Response{Res: results}, nil
-	// 	jobid:="12345678"
-	// 	var url string
-	// 	url = c.GenPPT(jobid,"123123")
-	// 	time.Sleep(2000)
-	// 	url  = c.CreateSlider(jobid , "123123", "title","口服降糖药市场CHC数据分析报告\n2018Q3YTD",0)
-	// 	time.Sleep(2000)
-	// 	url  = c.PushText(jobid , "123123", "#{##[#口服降糖药市场CHC数据分析报告\n2018Q3YTD#C#20Blue#]##P#center#}#",[]int{892086,2658273,7550359,690647},0,"Rectangle")
-	// 	time.Sleep(2000)
-	// 	url  = c.CreateSlider(jobid , "123123", "default","市场分析",1)
-	// 	time.Sleep(2000)
-	// 	url  = c.ExcelPush(jobid , "123123", "1",[]string{ 
-	// 	"#c#A1#s#col_common1*row_5#t#String#v#", 
-	// 	"#c#A2#s#col_common1*row_6#t#String#v#其他",
-	// 	"#c#A3#s#col_common1*row_7#t#String#v#GLP-1激动剂",
-	// 	"#c#A4#s#col_common1*row_8#t#String#v#DPP4抑制剂",
-	// 	"#c#A5#s#col_common1*row_9#t#String#v#格列酮类",
-	// 	"#c#A6#s#col_common1*row_10#t#String#v#格列奈类",
-	// 	"#c#A7#s#col_common1*row_11#t#String#v#磺脲类",
-	// 	"#c#A8#s#col_common1*row_12#t#String#v#双胍类",
-	// 	"#c#A9#s#col_common1*row_13#t#String#v#糖苷类",
-	// 	"#c#B1#s#col_common1*row_5#t#String#v#2017Q3YTD",
-	// 	"#c#B2#s#col_common1*row_6#t#Number#v#8952147.219",
-	// 	"#c#B3#s#col_common1*row_7#t#Number#v#57955.23183",
-	// 	"#c#B4#s#col_common1*row_8#t#Number#v#231121.6192",
-	// 	"#c#B5#s#col_common1*row_9#t#Number#v#9941337.422",
-	// 	"#c#B6#s#col_common1*row_10#t#Number#v#17155958.46",
-	// 	"#c#B7#s#col_common1*row_11#t#Number#v#71104098.57",
-	// 	"#c#B8#s#col_common1*row_12#t#Number#v#66350640.52",
-	// 	"#c#B9#s#col_common1*row_13#t#Number#v#270920150.6",
-	// 	"#c#C1#s#col_common1*row_5#t#String#v#2018Q3YTD",
-	// 	"#c#C2#s#col_common1*row_6#t#Number#v#13217709.42",
-	// 	"#c#C3#s#col_common1*row_7#t#Number#v#208363.6539",
-	// 	"#c#C4#s#col_common1*row_8#t#Number#v#7380419.939",
-	// 	"#c#C5#s#col_common1*row_9#t#Number#v#12691516.72",
-	// 	"#c#C6#s#col_common1*row_10#t#Number#v#22029627.82",
-	// 	"#c#C7#s#col_common1*row_11#t#Number#v#94492996.64",
-	// 	"#c#C8#s#col_common1*row_12#t#Number#v#122650916.3",
-	// 	"#c#C9#s#col_common1*row_13#t#Number#v#381883258.3",
-	// 	"#c#D1#s#col_common1*row_5#t#String#v#",
-	// 	"#c#D2#s#col_common1*row_6#t#Number#v#2.0%",
-	// 	"#c#D3#s#col_common1*row_7#t#Number#v#0.0%",
-	// 	"#c#D4#s#col_common1*row_8#t#Number#v#0.1%",
-	// 	"#c#D5#s#col_common1*row_9#t#Number#v#2.2%",
-	// 	"#c#D6#s#col_common1*row_10#t#Number#v#3.9%",
-	// 	"#c#D7#s#col_common1*row_11#t#Number#v#16.0%",
-	// 	"#c#D8#s#col_common1*row_12#t#Number#v#14.9%",
-	// 	"#c#D9#s#col_common1*row_13#t#Number#v#60.9%",
-	// 	"#c#E1#s#col_common1*row_5#t#String#v#",
-	// 	"#c#E2#s#col_common1*row_6#t#Number#v#2.0%",
-	// 	"#c#E3#s#col_common1*row_7#t#Number#v#0.0%",
-	// 	"#c#E4#s#col_common1*row_8#t#Number#v#1.1%",
-	// 	"#c#E5#s#col_common1*row_9#t#Number#v#1.9%",
-	// 	"#c#E6#s#col_common1*row_10#t#Number#v#3.4%",
-	// 	"#c#E7#s#col_common1*row_11#t#Number#v#14.4%",
-	// 	"#c#E8#s#col_common1*row_12#t#Number#v#18.7%",
-	// 	"#c#E9#s#col_common1*row_13#t#Number#v#58.3%"})
-
-	// 	url  = c.Excel2Chart(jobid , "123123", "1",[]int{892086,2658273,7550359,690647},1,"Stacked","")
-	// 	time.Sleep(2000)
-	// 	url  = c.PushText(jobid , "123123", "#{##[#口服降糖药物市场规模在北京市CHC的2018Q3YTD年以47.2%的增长速度达到6.55亿人民币#C#18Black#]##P#left#}#",
-	// 						[]int{892086,2658273,7550359,690647},1,"Rectangle")
-	// 						time.Sleep(2000)
-	// 	url  = c.PushText(jobid , "123123", "#{##[#口服降糖药物CHC市场\n（百万人民币)#C#14Black#]##P#center#}#",
-	// 						[]int{   899280,1723021,3528776,525179},1,"Rectangle")
-	// 						time.Sleep(2000)
-	// 	url  = c.PushText(jobid , "123123", "#{##[#口服降糖药物CHC市场\n（百万人民币)#C#14Black#]##P#center#}#",
-	// 						[]int{892086,2658273,7550359,690647},1,"Rectangle")
-	// 						time.Sleep(2000)
-	// 	url  = c.PushText(jobid , "123123", "#{##[#口服降糖药物CHC市场\n（百万人民币)#C#14Black#]##P#center#}#",
-	// 						[]int{892086,2658273,7550359,690647},1,"Rectangle")
-	// 						time.Sleep(2000)
-	// 	url  = c.PushText(jobid , "123123", "#{##[#口服降糖药物CHC市场\n（百万人民币)#C#14Black#]##P#center#}#",
-	// 						[]int{892086,2658273,7550359,690647},1,"Rectangle")
-	// 						time.Sleep(2000)
-	// 	url  = c.PushText(jobid , "123123", "#{##[#口服降糖药物CHC市场\n（百万人民币)#C#14Black#]##P#center#}#",
-	// 						[]int{892086,2658273,7550359,690647},1,"Rectangle")
-	// 						time.Sleep(2000)
-	// 	url  = c.PushText(jobid , "123123", "#{##[#口服降糖药物CHC市场\n（百万人民币)#C#14Black#]##P#center#}#",
-	// 						[]int{892086,2658273,7550359,690647},1,"Rectangle")
-	// 						time.Sleep(2000)
-	// 	url  = c.PushText(jobid , "123123", "#{##[#口服降糖药物CHC市场\n（百万人民币)#C#14Black#]##P#center#}#",
-	// 						[]int{892086,2658273,7550359,690647},1,"Rectangle")
-	// 						time.Sleep(2000)
-	// 	url  = c.PushText(jobid , "123123", "#{##[#口服降糖药物CHC市场\n（百万人民币)#C#14Black#]##P#center#}#",
-	// 						[]int{892086,2658273,7550359,690647},1,"Rectangle")
-	// 						time.Sleep(2000)
-	// 	url  = c.PushPPT(jobid , "123123")		
-	// 	fmt.Println(url)
-	
-		// result := results[0]
-		// if result.Url == ""{
-		// 	for date:=range result.Date{
-
-		// 	}
-		// a := []string {"GenPPT","CreateSlider"} 
-		// if 1==1 {
-		// 	for _,com := range a{
-		// 		switch com{
-		// 		case "GenPPT":
-		// 			url := c.GenPPT(jobid , 123123 )
-		// 			fmt.Println(url)
-		// 		case "CreateSlider":
-		// 			url := c.CreateSlider(jobid , 123123 )
-		// 			fmt.Println(url)
-		// 		case "PushText":
-		// 		case "Excel2Chart":
-		// 		case "Excel2PPT":
-		// 		case "ExportPPT":
-		// 		case "TextSetContent":
-		// 		case "PushPPT":
-		// 		}
-		// 	}
-		// 	//result.Url = url
-		// }
-	// return &Response{Res: results}, nil
 }
 
 // FindOne choc
@@ -382,6 +261,7 @@ func (c PPTInformationResource) Update(obj interface{}, r api2go.Request) (api2g
 	err := c.PPTInformationStorage.Update(choc)
 	return &Response{Res: choc, Code: http.StatusNoContent}, err
 }
+
 func (c PPTInformationResource) GenPPT(jobid string) string {
 	var arr BmModel.Request
 	arr.Command="GenPPT"
@@ -408,6 +288,7 @@ func (c PPTInformationResource) GenPPT(jobid string) string {
 	url = s[4][1:len(s[4])-4]
 	return url
 }
+
 func (c PPTInformationResource) CreateSlider(jobid string ,sliderType string , title string,slider int) string {
 	var arr BmModel.Request
 	var cs BmModel.CreateSlider
@@ -478,6 +359,7 @@ func (c PPTInformationResource) PushText(jobid string ,content string , pos []in
 	url = s[4][1:len(s[4])-4]
 	return url
 }
+
 func (c PPTInformationResource) ExcelPush(jobid string ,name string , cells []string) string {
 	var arr BmModel.Request
 	var cs BmModel.ExcelPush
@@ -508,6 +390,7 @@ func (c PPTInformationResource) ExcelPush(jobid string ,name string , cells []st
 	url = s[4][1:len(s[4])-4]
 	return url
 }
+
 func (c PPTInformationResource) Excel2Chart(jobid string ,name string , pos []int,slider int, chartType string,css string) string {
 	var arr BmModel.Request
 	var cs BmModel.Excel2Chart
@@ -541,6 +424,7 @@ func (c PPTInformationResource) Excel2Chart(jobid string ,name string , pos []in
 	url = s[4][1:len(s[4])-4]
 	return url
 }
+
 func (c PPTInformationResource) Excel2PPT(jobid string ,name string , pos []int,slider int) string {
 	var arr BmModel.Request
 	var cs BmModel.Excel2PPT
@@ -572,6 +456,7 @@ func (c PPTInformationResource) Excel2PPT(jobid string ,name string , pos []int,
 	url = s[4][1:len(s[4])-4]
 	return url
 }
+
 func (c PPTInformationResource) PushPPT(jobid string ) string {
 	var arr BmModel.Request
 	arr.Command="PushPPT"
