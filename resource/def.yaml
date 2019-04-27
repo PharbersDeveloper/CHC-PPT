@@ -115,7 +115,7 @@ daemons:
 - name: BmMongodbDaemon
   method: NewMongoDBDaemon
   args:
-    host: 192.168.100.176
+    host: primary
     port: 27017
     database: pharbers-aggrate-data
 - name: BmRedisDaemon
