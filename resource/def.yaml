@@ -39,6 +39,14 @@ storages:
   method: NewChcppttemplateStorage
   daemons:
   - BmMongodbDaemon
+- name: BmMarketlistStorage
+  method: NewMarketlistStorage
+  daemons:
+  - BmMongodbDaemon
+- name: BmCitylistStorage
+  method: NewCitylistStorage
+  daemons:
+  - BmMongodbDaemon
 
 resources:
 - name: BmRequestResource
@@ -59,6 +67,14 @@ resources:
   - BmPptinformationStorage
   - BmChcpptStorage
   - BmChcppttemplateStorage
+- name: BmMarketlistResource
+  method: NewMarketlistResource
+  storages:
+  - BmMarketlistStorage
+- name: BmCitylistResource
+  method: NewCitylistResource
+  storages:
+  - BmCitylistStorage
 
 models:
 - BmRequest
@@ -71,6 +87,8 @@ models:
 - BmPptinformation
 - BmChcppt
 - BmChcppttemplate
+- BmMarketlist
+- BmCitylist
 
 services:
 - name: bm-request
@@ -79,24 +97,30 @@ services:
 - name: bm-pptinformation
   model: BmPptinformation
   resource: BmPptinformationResource
+- name: bm-marketlist
+  model: BmMarketlist
+  resource: BmMarketlistResource
+- name: bm-citylist
+  model: BmCitylist
+  resource: BmCitylistResource
 
 functions:
-- name: BmCitylistHandler
-  create: NewCitylistHandler
-  daemons:
-  - BmMongodbDaemon
-  method: Citylist
-  http: GET
-  args:
-  - name
-- name: BmMarketlistHandler
-  create: NewMarketlistHandler
-  daemons:
-  - BmMongodbDaemon
-  method: Marketlist
-  http: GET
-  args:
-  - name
+# - name: BmCitylistHandler
+#   create: NewCitylistHandler
+#   daemons:
+#   - BmMongodbDaemon
+#   method: Citylist
+#   http: GET
+#   args:
+#   - name
+# - name: BmMarketlistHandler
+#   create: NewMarketlistHandler
+#   daemons:
+#   - BmMongodbDaemon
+#   method: Marketlist
+#   http: GET
+#   args:
+#   - name
 
 
 middlewares:

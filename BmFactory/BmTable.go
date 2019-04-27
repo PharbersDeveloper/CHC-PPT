@@ -23,11 +23,15 @@ var BLACKMIRROR_MODEL_FACTORY = map[string]interface{}{
 	"BmPptinformation":              BmModel.Pptinformation{},
 	"BmChcppt":                 BmModel.Chcppt{},
 	"BmChcppttemplate":                 BmModel.Chcppttemplate{},
+	"BmMarketlist":                 BmModel.Marketlist{},
+	"BmCitylist":                 BmModel.Citylist{},
 }
 
 var BLACKMIRROR_RESOURCE_FACTORY = map[string]interface{}{
 	"BmRequestResource":               BmResource.RequestResource{},
 	"BmPptinformationResource":               BmResource.PptinformationResource{},
+	"BmCitylistResource":               BmResource.CitylistResource{},
+	"BmMarketlistResource":               BmResource.MarketlistResource{},
 }
 
 var BLACKMIRROR_STORAGE_FACTORY = map[string]interface{}{
@@ -41,6 +45,8 @@ var BLACKMIRROR_STORAGE_FACTORY = map[string]interface{}{
 	"BmPptinformationStorage":                BmDataStorage.PptinformationStorage{},
 	"BmChcpptStorage":                BmDataStorage.ChcpptStorage{},
 	"BmChcppttemplateStorage":                BmDataStorage.ChcppttemplateStorage{},
+	"BmMarketlistStorage":                BmDataStorage.MarketlistStorage{},
+	"BmCitylistStorage":                BmDataStorage.CitylistStorage{},
 }
 
 var BLACKMIRROR_MIDDLEWARE_FACTORY = map[string]interface{}{
