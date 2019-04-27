@@ -54,18 +54,18 @@ func (c PptinformationResource) FindAll(r api2go.Request) (api2go.Responder, err
 	if len(results) <= 0{
 		return &Response{Res: results}, nil
 	}
-	var url string
-	uuid, err := uuid.GenerateUUID()
-	if err != nil {
-		fmt.Println(err)
-		return nil,err
-	}
-	url = c.GenPPT(uuid)
-	time.Sleep(2000)
 	result := results[0]
-	var iscreat int
-	var temp string
 	if result.Url == ""{
+		var url string
+		var iscreat int
+		var temp string
+		uuid, err := uuid.GenerateUUID()
+		if err != nil {
+			fmt.Println(err)
+			return nil,err
+		}
+		url = c.GenPPT(uuid)
+		time.Sleep(2000)
 		result.Url = url
 		for i,data:=range result.Data{
 			iscreat=0	
