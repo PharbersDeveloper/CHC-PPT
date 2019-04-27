@@ -24,7 +24,6 @@ func main() {
 
 	var bmRouter BmConfig.BmRouterConfig
 	bmRouter.GenerateConfig("BM_HOME")
-	//bmRouter.Port = "20199"
 	addr := bmRouter.Host + ":" + bmRouter.Port
 	fmt.Println("Listening on ", addr)
 	api := api2go.NewAPIWithResolver(version, &BmApiResolver.RequestURL{Addr: addr})
