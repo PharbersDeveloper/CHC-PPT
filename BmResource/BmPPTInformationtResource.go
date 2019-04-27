@@ -20,37 +20,37 @@ import (
 	
 )
 
-type PPTInformationResource struct {
+type PptinformationResource struct {
 	RequestStorage 		  *BmDataStorage.RequestStorage
-	PPTInformationStorage *BmDataStorage.PPTInformationStorage
+	PptinformationStorage *BmDataStorage.PptinformationStorage
 	ChcpptStorage         *BmDataStorage.ChcpptStorage
 	ChcppttemplateStorage         *BmDataStorage.ChcppttemplateStorage
 }
 
-func (c PPTInformationResource) NewPPTInformationResource(args []BmDataStorage.BmStorage) PPTInformationResource {
+func (c PptinformationResource) NewPptinformationResource(args []BmDataStorage.BmStorage) PptinformationResource {
 	var cs *BmDataStorage.RequestStorage
-	var ss *BmDataStorage.PPTInformationStorage
+	var ss *BmDataStorage.PptinformationStorage
 	var ts *BmDataStorage.ChcpptStorage
 	var ps *BmDataStorage.ChcppttemplateStorage
 	for _, arg := range args {
 		tp := reflect.ValueOf(arg).Elem().Type()
 		if tp.Name() == "RequestStorage" {
 			cs = arg.(*BmDataStorage.RequestStorage)
-		}else if tp.Name() == "PPTInformationStorage" {
-			ss = arg.(*BmDataStorage.PPTInformationStorage)
+		}else if tp.Name() == "PptinformationStorage" {
+			ss = arg.(*BmDataStorage.PptinformationStorage)
 		}else if tp.Name() == "ChcpptStorage" {
 			ts = arg.(*BmDataStorage.ChcpptStorage)
 		} else if tp.Name() == "ChcppttemplateStorage" {
 			ps = arg.(*BmDataStorage.ChcppttemplateStorage)
 		}
 	}
-	return PPTInformationResource{RequestStorage: cs,PPTInformationStorage:ss,ChcpptStorage: ts,ChcppttemplateStorage: ps}
+	return PptinformationResource{RequestStorage: cs,PptinformationStorage:ss,ChcpptStorage: ts,ChcppttemplateStorage: ps}
 }
 
 // FindAll Requests
-func (c PPTInformationResource) FindAll(r api2go.Request) (api2go.Responder, error) {
+func (c PptinformationResource) FindAll(r api2go.Request) (api2go.Responder, error) {
 
-	results := c.PPTInformationStorage.GetAll(r,-1,-1)
+	results := c.PptinformationStorage.GetAll(r,-1,-1)
 	if len(results) <= 0{
 		return &Response{Res: results}, nil
 	}
@@ -215,54 +215,55 @@ func (c PPTInformationResource) FindAll(r api2go.Request) (api2go.Responder, err
 					}		
 					name=chart+temp	
 					url  = c.ExcelPush(uuid ,name,cells)
-					time.Sleep(3000)
+					time.Sleep(2000)
 					url  = c.Excel2Chart(uuid,name,pos,i,shapeType,css)	
-					time.Sleep(3000)	
+					time.Sleep(2000)	
 				}
 			}
 		}
 		url  = c.PushPPT(uuid)
-		_= c.PPTInformationStorage.Update(*result)
+		_= c.PptinformationStorage.Update(*result)
+		time.Sleep(40*time.Second)
 	}
 	return &Response{Res: results}, nil
 }
 
 // FindOne choc
-func (c PPTInformationResource) FindOne(ID string, r api2go.Request) (api2go.Responder, error) {
-	res, err := c.PPTInformationStorage.GetOne(ID)
+func (c PptinformationResource) FindOne(ID string, r api2go.Request) (api2go.Responder, error) {
+	res, err := c.PptinformationStorage.GetOne(ID)
 	return &Response{Res: res}, err
 }
 
 // Create a new choc
-func (c PPTInformationResource) Create(obj interface{}, r api2go.Request) (api2go.Responder, error) {
-	choc, ok := obj.(BmModel.PPTInformation)
+func (c PptinformationResource) Create(obj interface{}, r api2go.Request) (api2go.Responder, error) {
+	choc, ok := obj.(BmModel.Pptinformation)
 	if !ok {
 		return &Response{}, api2go.NewHTTPError(errors.New("Invalid instance given"), "Invalid instance given", http.StatusBadRequest)
 	}
 
-	id := c.PPTInformationStorage.Insert(choc)
+	id := c.PptinformationStorage.Insert(choc)
 	choc.ID = id
 	return &Response{Res: choc, Code: http.StatusCreated}, nil
 }
 
 // Delete a choc :(
-func (c PPTInformationResource) Delete(id string, r api2go.Request) (api2go.Responder, error) {
-	err := c.PPTInformationStorage.Delete(id)
+func (c PptinformationResource) Delete(id string, r api2go.Request) (api2go.Responder, error) {
+	err := c.PptinformationStorage.Delete(id)
 	return &Response{Code: http.StatusOK}, err
 }
 
 // Update a choc
-func (c PPTInformationResource) Update(obj interface{}, r api2go.Request) (api2go.Responder, error) {
-	choc, ok := obj.(BmModel.PPTInformation)
+func (c PptinformationResource) Update(obj interface{}, r api2go.Request) (api2go.Responder, error) {
+	choc, ok := obj.(BmModel.Pptinformation)
 	if !ok {
 		return &Response{}, api2go.NewHTTPError(errors.New("Invalid instance given"), "Invalid instance given", http.StatusBadRequest)
 	}
 
-	err := c.PPTInformationStorage.Update(choc)
+	err := c.PptinformationStorage.Update(choc)
 	return &Response{Res: choc, Code: http.StatusNoContent}, err
 }
 
-func (c PPTInformationResource) GenPPT(jobid string) string {
+func (c PptinformationResource) GenPPT(jobid string) string {
 	var arr BmModel.Request
 	arr.Command="GenPPT"
 	arr.Jobid=jobid
@@ -289,7 +290,7 @@ func (c PPTInformationResource) GenPPT(jobid string) string {
 	return url
 }
 
-func (c PPTInformationResource) CreateSlider(jobid string ,sliderType string , title string,slider int) string {
+func (c PptinformationResource) CreateSlider(jobid string ,sliderType string , title string,slider int) string {
 	var arr BmModel.Request
 	var cs BmModel.CreateSlider
 	cs.Slider=slider
@@ -325,7 +326,7 @@ func (c PPTInformationResource) CreateSlider(jobid string ,sliderType string , t
 	return url
 }
 
-func (c PPTInformationResource) PushText(jobid string ,content string , pos []int,slider int,shapeType string) string {
+func (c PptinformationResource) PushText(jobid string ,content string , pos []int,slider int,shapeType string) string {
 	var arr BmModel.Request
 	var cs BmModel.TextSetContent
 	cs.Slider=slider
@@ -360,7 +361,7 @@ func (c PPTInformationResource) PushText(jobid string ,content string , pos []in
 	return url
 }
 
-func (c PPTInformationResource) ExcelPush(jobid string ,name string , cells []string) string {
+func (c PptinformationResource) ExcelPush(jobid string ,name string , cells []string) string {
 	var arr BmModel.Request
 	var cs BmModel.ExcelPush
 	cs.Name=name
@@ -391,7 +392,7 @@ func (c PPTInformationResource) ExcelPush(jobid string ,name string , cells []st
 	return url
 }
 
-func (c PPTInformationResource) Excel2Chart(jobid string ,name string , pos []int,slider int, chartType string,css string) string {
+func (c PptinformationResource) Excel2Chart(jobid string ,name string , pos []int,slider int, chartType string,css string) string {
 	var arr BmModel.Request
 	var cs BmModel.Excel2Chart
 	cs.Name=name
@@ -425,7 +426,7 @@ func (c PPTInformationResource) Excel2Chart(jobid string ,name string , pos []in
 	return url
 }
 
-func (c PPTInformationResource) Excel2PPT(jobid string ,name string , pos []int,slider int) string {
+func (c PptinformationResource) Excel2PPT(jobid string ,name string , pos []int,slider int) string {
 	var arr BmModel.Request
 	var cs BmModel.Excel2PPT
 	cs.Name=name
@@ -457,7 +458,7 @@ func (c PPTInformationResource) Excel2PPT(jobid string ,name string , pos []int,
 	return url
 }
 
-func (c PPTInformationResource) PushPPT(jobid string ) string {
+func (c PptinformationResource) PushPPT(jobid string ) string {
 	var arr BmModel.Request
 	arr.Command="PushPPT"
 	arr.Jobid=jobid

@@ -53,7 +53,7 @@ func (p *Pod) RegisterSerFromYAML(path string) {
 	p.CreateDaemonInstances()
 	p.CreateStorageInstances()
 	p.CreateResourceInstances()
-	//p.CreateFunctionInstances()
+	p.CreateFunctionInstances()
 	//p.CreateMiddleInstances()
 	//p.CreatePanicHandleInstances()
 }

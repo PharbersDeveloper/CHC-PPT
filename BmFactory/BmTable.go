@@ -20,14 +20,14 @@ var BLACKMIRROR_MODEL_FACTORY = map[string]interface{}{
 	"BmRequest":                	 BmModel.Request{},
 	"BmExportPPT":                 	 BmModel.ExportPPT{},
 	"BmTextSetContent":              BmModel.TextSetContent{},
-	"BmPPTInformation":              BmModel.PPTInformation{},
+	"BmPptinformation":              BmModel.Pptinformation{},
 	"BmChcppt":                 BmModel.Chcppt{},
 	"BmChcppttemplate":                 BmModel.Chcppttemplate{},
 }
 
 var BLACKMIRROR_RESOURCE_FACTORY = map[string]interface{}{
 	"BmRequestResource":               BmResource.RequestResource{},
-	"BmPPTInformationResource":               BmResource.PPTInformationResource{},
+	"BmPptinformationResource":               BmResource.PptinformationResource{},
 }
 
 var BLACKMIRROR_STORAGE_FACTORY = map[string]interface{}{
@@ -38,7 +38,7 @@ var BLACKMIRROR_STORAGE_FACTORY = map[string]interface{}{
 	"BmRequestStorage":                BmDataStorage.RequestStorage{},
 	"BmExportPPTStorage":                BmDataStorage.ExportPPTStorage{},
 	"BmTextSetContentStorage":                BmDataStorage.TextSetContentStorage{},
-	"BmPPTInformationStorage":                BmDataStorage.PPTInformationStorage{},
+	"BmPptinformationStorage":                BmDataStorage.PptinformationStorage{},
 	"BmChcpptStorage":                BmDataStorage.ChcpptStorage{},
 	"BmChcppttemplateStorage":                BmDataStorage.ChcppttemplateStorage{},
 }
@@ -53,7 +53,8 @@ var BLACKMIRROR_DAEMON_FACTORY = map[string]interface{}{
 }
 
 var BLACKMIRROR_FUNCTION_FACTORY = map[string]interface{}{
-	"BmCHC_PPTHandler":     	   BmHandler.CHC_PPTHandler{},
+	"BmCitylistHandler":     	   BmHandler.CitylistHandler{},
+	"BmMarketlistHandler":     	   BmHandler.MarketlistHandler{},
 }
 
 

@@ -23,8 +23,8 @@ storages:
   method: NewExportPPTStorage
   daemons:
   - BmMongodbDaemon
-- name: BmPPTInformationStorage
-  method: NewPPTInformationStorage
+- name: BmPptinformationStorage
+  method: NewPptinformationStorage
   daemons:
   - BmMongodbDaemon
 - name: BmTextSetContentStorage
@@ -49,14 +49,14 @@ resources:
   - BmExcel2ChartStorage
   - BmExcelPushStorage
   - BmExportPPTStorage
-  - BmPPTInformationStorage 
+  - BmPptinformationStorage 
   - BmExcel2PPTStorage
   - BmTextSetContentStorage
-- name: BmPPTInformationResource
-  method: NewPPTInformationResource
+- name: BmPptinformationResource
+  method: NewPptinformationResource
   storages:
   - BmRequestStorage
-  - BmPPTInformationStorage
+  - BmPptinformationStorage
   - BmChcpptStorage
   - BmChcppttemplateStorage
 
@@ -68,7 +68,7 @@ models:
 - BmExcelPush
 - BmExportPPT
 - BmTextSetContent
-- BmPPTInformation
+- BmPptinformation
 - BmChcppt
 - BmChcppttemplate
 
@@ -77,18 +77,26 @@ services:
   model: BmRequest
   resource: BmRequestResource
 - name: bm-pptinformation
-  model: BmPPTInformation
-  resource: BmPPTInformationResource
+  model: BmPptinformation
+  resource: BmPptinformationResource
 
 functions:
-# - name: BmCHC_PPTHandler
-#   create: NewBmCHC_PPTHandler
-#   daemons:
-#   - BmMongodbDaemon
-#   method: CHC_PPT
-#   http: GET
-#   args:
-#   - name
+- name: BmCitylistHandler
+  create: NewCitylistHandler
+  daemons:
+  - BmMongodbDaemon
+  method: Citylist
+  http: GET
+  args:
+  - name
+- name: BmMarketlistHandler
+  create: NewMarketlistHandler
+  daemons:
+  - BmMongodbDaemon
+  method: Marketlist
+  http: GET
+  args:
+  - name
 
 
 middlewares:
