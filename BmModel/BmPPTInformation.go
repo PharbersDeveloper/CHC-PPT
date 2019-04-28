@@ -28,5 +28,13 @@ func (c *Pptinformation) SetID(id string) error {
 
 func (u *Pptinformation) GetConditionsBsonM(parameters map[string][]string) bson.M {
 	rst := make(map[string]interface{})
+	for k, v := range parameters {
+		switch k {
+		case "market":
+			rst[k] = v[0]
+		case "city":
+			rst[k] = v[0]
+		}
+	}
 	return rst
 }
