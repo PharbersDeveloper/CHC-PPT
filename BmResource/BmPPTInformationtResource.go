@@ -54,175 +54,9 @@ func (c PptinformationResource) FindAll(r api2go.Request) (api2go.Responder, err
 	if len(results) <= 0{
 		return &Response{Res: results}, nil
 	}
-	result := results[0]
-	if result.Url == ""{
-		var url string
-		var iscreat int
-		var temp string
-		uuid, err := uuid.GenerateUUID()
-		if err != nil {
-			fmt.Println(err)
-			return nil,err
-		}
-		url = c.GenPPT(uuid)
-		time.Sleep(2000)
-		result.Url = url
-		for i,data:=range result.Data{
-			iscreat=0	
-			if i==8{
-				url  = c.CreateSlider(uuid,"end","end",i)
-				break
-			}
-			dataMap,_:= data.(bson.M)
-			tempint:=dataMap["temp"]
-			if tempint!=nil{
-				temp=tempint.(string)
-			}
-			
-			tmp,err := c.ChcppttemplateStorage.GetOne(temp)
-			if err != nil {
-				fmt.Println(err)
-				return nil,err
-			}
-			Shapes:=tmp.Shapes
-		
-			contentsint,_:= dataMap["contents"]
-			contentints,_:=contentsint.([]interface{})
-			for j,contentint := range contentints{
-				var txt string
-				var name string
-				var css string
-				var shapeType string
-				var table string
-				var chart string
-				var pos []int
-				var cells []string
-				Shapeint,_:=Shapes[j].(interface{})
-				Shape,_:= Shapeint.(bson.M)
-				posint:=Shape["pos"]
-				if posint!=nil{
-					posints,_:=posint.([]interface{})
-					for _,posint:=range posints{
-						posint,_:=posint.(int)
-						tt:=int32(posint)
-						float:=float32(tt)
-						float=float/0.000278
-						pos=append(pos,int(float))
-					}
-				}
-				shapeTypeint:=Shape["shapeType"]
-				if shapeTypeint!=nil{
-					shapeType=shapeTypeint.(string)
-				}
-				formatint:=Shape["format"]
-				var formatstr string
-				if formatint!=nil{
-					formatstr=formatint.(string)
-				}
-			
-				cellsint:=Shape["cells"]
-				if cellsint!=nil{
-					cellsints,_:=cellsint.([]interface{})
-					for _,cellint:=range cellsints{
-						cell,_:=cellint.(string)
-						cells=append(cells,cell)
-					}
-				}	
-				nameint:=Shape["name"]
-				if nameint!=nil{
-					name="tmp"
-				}
-				cssint:=Shape["css"]
-				if cssint!=nil{
-					css=cssint.(string)
-				}
-				content,_:= contentint.(bson.M)
-				txtint:=content["txt"]
-				if txtint!=nil{
-					txttmp:=txtint.(string)
-					txt=strings.Replace(formatstr,"txt",txttmp, 1)
-				}
-
-				tableint:=content["table"]
-				if tableint!=nil{
-					table=tableint.(string)
-				}
-				
-				chartint:=content["chart"]
-				if chartint!=nil{
-					chart=chartint.(string)
-				}
-				if iscreat==0{
-					url  = c.CreateSlider(uuid,tmp.Slider_Type,txt,i)
-					time.Sleep(2000)
-					iscreat=1
-				}
-				if temp!=""&&txt!=""{
-					c.PushText(uuid,txt,pos,i,shapeType)
-					time.Sleep(2000)
-				}else if temp!=""&&table!=""{
-					chcppts,_:=c.ChcpptStorage.GetOne(table)
-					for _,Cellint:=range chcppts.Cells{
-						var coordinate string
-						var value string
-						cell,_:=Cellint.(bson.M)
-
-						coordinateint:=cell["coordinate"]
-						if coordinateint!=nil{
-							coordinate=coordinateint.(string)
-						}
-						valueint:=cell["value"]
-						if valueint!=nil{
-							value=valueint.(string)
-						}
-						for t,celldata:=range cells{
-							reg := regexp.MustCompile("#c#[^#]+")
-							sitearr := reg.Find([]byte(celldata))
-							site:=string(sitearr)[3:]
-							if site==coordinate{
-								cells[t]=cells[t]+value
-							}
-						}
-					}		
-					name=table+temp
-					url  = c.ExcelPush(uuid ,name,cells)
-					time.Sleep(2000)
-					url  = c.Excel2PPT(uuid,name,pos,i)
-					time.Sleep(2000)			
-				}else if temp!=""&&chart!=""{
-					chcppts,_:=c.ChcpptStorage.GetOne(chart)
-					for _,Cellint:=range chcppts.Cells{
-						var coordinate string
-						var value string
-						cell,_:=Cellint.(bson.M)
-
-						coordinateint:=cell["coordinate"]
-						if coordinateint!=nil{
-							coordinate=coordinateint.(string)
-						}
-						valueint:=cell["value"]
-						if valueint!=nil{
-							value=valueint.(string)
-						}
-						for t,celldata:=range cells{
-							reg := regexp.MustCompile("#c#[^#]+")
-							sitearr := reg.Find([]byte(celldata))
-							site:=string(sitearr)[3:]
-							if site==coordinate{
-								cells[t]=cells[t]+value
-							}
-						}
-					}		
-					name=chart+temp	
-					url  = c.ExcelPush(uuid ,name,cells)
-					time.Sleep(2000)
-					url  = c.Excel2Chart(uuid,name,pos,i,shapeType,css)	
-					time.Sleep(2000)	
-				}
-			}
-		}
-		url  = c.PushPPT(uuid)
-		_= c.PptinformationStorage.Update(*result)
+	if results[0].Url == ""{
+		c.GetUrl(results[0])
+		_= c.PptinformationStorage.Update(*results[0])
 		time.Sleep(40*time.Second)
 	}
 	return &Response{Res: results}, nil
@@ -484,3 +318,194 @@ func (c PptinformationResource) PushPPT(jobid string ) string {
 	url = s[4][1:len(s[4])-4]
 	return url
 }
+func (c PptinformationResource) GetShape(Shape bson.M,pos *[]int,shapeType *string,formatstr *string,cells *[]string,name *string,css *string) {
+	posint:=Shape["pos"]
+	if posint!=nil{
+		posints,_:=posint.([]interface{})
+		for _,posint:=range posints{
+			posint,_:=posint.(int)
+			tt:=int32(posint)
+			float:=float32(tt)
+			float=float/0.000278
+			*pos=append(*pos,int(float))
+		}
+	}
+
+	shapeTypeint:=Shape["shapeType"]
+	if shapeTypeint!=nil{
+		*shapeType=shapeTypeint.(string)
+	}
+
+	formatint:=Shape["format"]
+	if formatint!=nil{
+		*formatstr=formatint.(string)
+	}
+
+	cellsint:=Shape["cells"]
+	if cellsint!=nil{
+		cellsints,_:=cellsint.([]interface{})
+		for _,cellint:=range cellsints{
+			cell,_:=cellint.(string)
+			*cells=append(*cells,cell)
+		}
+	}
+
+	nameint:=Shape["name"]
+	if nameint!=nil{
+		*name="tmp"
+	}
+
+	cssint:=Shape["css"]
+	if cssint!=nil{
+		*css=cssint.(string)
+	}
+}
+func (c PptinformationResource) GetContent(content bson.M,formatstr string,txt *string,table *string,chart*string){
+	txtsint:=content["txts"]
+	if txtsint!=nil{
+		txtints := txtsint.([]interface{})
+		for _,txtint:=range txtints{
+			if txtint!=nil{
+				txttmp:=txtint.(bson.M)
+				for txtx,txtcent := range txttmp{
+					txtstr:=txtcent.(string)
+					*txt=strings.Replace(formatstr,txtx,txtstr,1)
+				}
+				
+			}
+		}
+	}
+	
+	
+	tableint:=content["table"]
+	if tableint!=nil{
+		*table=tableint.(string)
+	}
+
+	chartint:=content["chart"]
+	if chartint!=nil{
+		*chart=chartint.(string)
+	}
+}
+func (c PptinformationResource) GetDatamap(dataMap bson.M,temp*string,contentints*[]interface{}){
+	tempint:=dataMap["temp"]
+	if tempint!=nil{
+		*temp=tempint.(string)
+	}	
+	contentsint,_:= dataMap["contents"]
+	*contentints,_=contentsint.([]interface{})
+}
+func (c PptinformationResource) GetUrl( result *BmModel.Pptinformation){
+	var iscreat int
+	var temp string
+	var url string
+	uuid, err := uuid.GenerateUUID()
+	if err != nil {
+		fmt.Println(err)
+		return 
+	}
+	url = c.GenPPT(uuid)
+	time.Sleep(2000)
+	for i,data:=range result.Data{
+		var contentints []interface{}
+		iscreat=0	
+		if i==8{
+			url  = c.CreateSlider(uuid,"end","end",i)
+			result.Url = url
+			break
+		}
+		dataMap,_:= data.(bson.M)
+		c.GetDatamap(dataMap,&temp,&contentints)
+		tmp,err := c.ChcppttemplateStorage.GetOne(temp)
+		if err != nil {
+			fmt.Println(err)
+			return 
+		}
+		Shapes:=tmp.Shapes
+		for j,contentint := range contentints{
+			var txt string
+			var name string
+			var css string
+			var shapeType string
+			var table string
+			var chart string
+			var pos []int
+			var cells []string
+			var formatstr string
+			Shapeint,_:=Shapes[j].(interface{})
+			Shape,_:= Shapeint.(bson.M)
+			c.GetShape(Shape,&pos,&shapeType,&formatstr,&cells,&name,&css)
+			content,_:= contentint.(bson.M)
+			c.GetContent(content,formatstr,&txt,&table,&chart)
+			if iscreat==0{
+				url  = c.CreateSlider(uuid,tmp.Slider_Type,txt,i)
+				time.Sleep(2000)
+				iscreat=1
+			}
+			if temp!=""&&txt!=""{
+				c.PushText(uuid,txt,pos,i,shapeType)
+				time.Sleep(2000)
+			}else if temp!=""&&table!=""{
+				chcppts,_:=c.ChcpptStorage.GetOne(table)
+				for _,Cellint:=range chcppts.Cells{
+					var coordinate string
+					var value string
+					cell,_:=Cellint.(bson.M)
+
+					coordinateint:=cell["coordinate"]
+					if coordinateint!=nil{
+						coordinate=coordinateint.(string)
+					}
+					valueint:=cell["value"]
+					if valueint!=nil{
+						value=valueint.(string)
+					}
+					for t,celldata:=range cells{
+						reg := regexp.MustCompile("#c#[^#]+")
+						sitearr := reg.Find([]byte(celldata))
+						site:=string(sitearr)[3:]
+						if site==coordinate{
+							cells[t]=cells[t]+value
+						}
+					}
+				}		
+				name=table+temp
+				url  = c.ExcelPush(uuid ,name,cells)
+				time.Sleep(2000)
+				url  = c.Excel2PPT(uuid,name,pos,i)
+				time.Sleep(2000)			
+			}else if temp!=""&&chart!=""{
+				chcppts,_:=c.ChcpptStorage.GetOne(chart)
+				for _,Cellint:=range chcppts.Cells{
+					var coordinate string
+					var value string
+					cell,_:=Cellint.(bson.M)
+
+					coordinateint:=cell["coordinate"]
+					if coordinateint!=nil{
+						coordinate=coordinateint.(string)
+					}
+					valueint:=cell["value"]
+					if valueint!=nil{
+						value=valueint.(string)
+					}
+					for t,celldata:=range cells{
+						reg := regexp.MustCompile("#c#[^#]+")
+						sitearr := reg.Find([]byte(celldata))
+						site:=string(sitearr)[3:]
+						if site==coordinate{
+							cells[t]=cells[t]+value
+						}
+					}
+				}		
+				name=chart+temp	
+				url  = c.ExcelPush(uuid ,name,cells)
+				time.Sleep(2000)
+				url  = c.Excel2Chart(uuid,name,pos,i,shapeType,css)	
+				time.Sleep(2000)	
+			}
+		}
+	}
+	url  = c.PushPPT(uuid)
+}
+
