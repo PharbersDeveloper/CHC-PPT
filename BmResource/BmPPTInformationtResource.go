@@ -369,14 +369,13 @@ func (c PptinformationResource) GetContent(content bson.M,formatstr string,txt *
 				txttmp:=txtint.(bson.M)
 				for txtx,txtcent := range txttmp{
 					txtstr:=txtcent.(string)
-					*txt=strings.Replace(formatstr,txtx,txtstr,1)
+					formatstr=strings.Replace(formatstr,txtx,txtstr,1)
 				}
 				
 			}
 		}
 	}
-	
-	
+	*txt=formatstr
 	tableint:=content["table"]
 	if tableint!=nil{
 		*table=tableint.(string)
