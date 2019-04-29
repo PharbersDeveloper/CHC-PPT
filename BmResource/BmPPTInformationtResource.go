@@ -57,7 +57,7 @@ func (c PptinformationResource) FindAll(r api2go.Request) (api2go.Responder, err
 	if results[0].Url == ""{
 		c.GetUrl(results[0])
 		_= c.PptinformationStorage.Update(*results[0])
-		time.Sleep(40*time.Second)
+		//time.Sleep(40*time.Second)
 	}
 	return &Response{Res: results}, nil
 }
@@ -369,6 +369,10 @@ func (c PptinformationResource) GetContent(content bson.M,formatstr string,txt *
 				txttmp:=txtint.(bson.M)
 				for txtx,txtcent := range txttmp{
 					txtstr:=txtcent.(string)
+					if txtstr=="end"{
+						*txt=txtstr
+						return
+					}
 					formatstr=strings.Replace(formatstr,txtx,txtstr,1)
 				}
 				
@@ -408,11 +412,6 @@ func (c PptinformationResource) GetUrl( result *BmModel.Pptinformation){
 	for i,data:=range result.Data{
 		var contentints []interface{}
 		iscreat=0	
-		if i==8{
-			url  = c.CreateSlider(uuid,"end","end",i)
-			result.Url = url
-			break
-		}
 		dataMap,_:= data.(bson.M)
 		c.GetDatamap(dataMap,&temp,&contentints)
 		tmp,err := c.ChcppttemplateStorage.GetOne(temp)
@@ -431,11 +430,19 @@ func (c PptinformationResource) GetUrl( result *BmModel.Pptinformation){
 			var pos []int
 			var cells []string
 			var formatstr string
-			Shapeint,_:=Shapes[j].(interface{})
-			Shape,_:= Shapeint.(bson.M)
-			c.GetShape(Shape,&pos,&shapeType,&formatstr,&cells,&name,&css)
+			if len(Shapes)>0{
+				Shapeint,_:=Shapes[j].(interface{})
+				Shape,_:= Shapeint.(bson.M)
+				c.GetShape(Shape,&pos,&shapeType,&formatstr,&cells,&name,&css)
+			}
+			
 			content,_:= contentint.(bson.M)
 			c.GetContent(content,formatstr,&txt,&table,&chart)
+			if txt=="end"{
+				url  = c.CreateSlider(uuid,"end","end",i)
+				result.Url = url
+				break
+			}
 			if iscreat==0{
 				url  = c.CreateSlider(uuid,tmp.Slider_Type,txt,i)
 				time.Sleep(2000)
