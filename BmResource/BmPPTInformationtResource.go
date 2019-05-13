@@ -17,9 +17,9 @@ import (
 	"time"
 	"regexp"
 	"github.com/hashicorp/go-uuid"
-	
+	"github.com/alfredyang1986/blackmirror/bmkafka"
 )
-
+var url string
 type PptinformationResource struct {
 	RequestStorage 		  *BmDataStorage.RequestStorage
 	PptinformationStorage *BmDataStorage.PptinformationStorage
@@ -72,6 +72,11 @@ func (c PptinformationResource) GetUrl( result *BmModel.Pptinformation){
 		return 
 	}
 	url = c.GenPPT(uuid)
+	if url == ""{
+		painc("err")
+	}else{
+		url=""
+	}
 	time.Sleep(2000)
 	for i,data:=range result.Data{
 		var contentints []interface{}
@@ -109,11 +114,21 @@ func (c PptinformationResource) GetUrl( result *BmModel.Pptinformation){
 			}
 			if iscreat==0{
 				url  = c.CreateSlider(uuid,tmp.Slider_Type,txt,i)
+				if url == ""{
+					painc("err")
+				}else{
+					url=""
+				}
 				time.Sleep(2000)
 				iscreat=1
 			}
 			if temp!=""&&txt!=""{
-				c.PushText(uuid,txt,pos,i,shapeType)
+				url=c.PushText(uuid,txt,pos,i,shapeType)
+				if url == ""{
+					painc("err")
+				}else{
+					url=""
+				}
 				time.Sleep(2000)
 			}else if temp!=""&&table!=""{
 				chcppts,_:=c.ChcpptStorage.GetOne(table)
@@ -141,8 +156,18 @@ func (c PptinformationResource) GetUrl( result *BmModel.Pptinformation){
 				}		
 				name=table+temp
 				url  = c.ExcelPush(uuid ,name,cells)
+				if url == ""{
+					painc("err")
+				}else{
+					url=""
+				}
 				time.Sleep(2000)
 				url  = c.Excel2PPT(uuid,name,pos,i)
+				if url == ""{
+					painc("err")
+				}else{
+					url=""
+				}
 				time.Sleep(2000)			
 			}else if temp!=""&&chart!=""{
 				chcppts,_:=c.ChcpptStorage.GetOne(chart)
@@ -170,8 +195,18 @@ func (c PptinformationResource) GetUrl( result *BmModel.Pptinformation){
 				}		
 				name=chart+temp	
 				url  = c.ExcelPush(uuid ,name,cells)
+				if url == ""{
+					painc("err")
+				}else{
+					url=""
+				}
 				time.Sleep(2000)
 				url  = c.Excel2Chart(uuid,name,pos,i,shapeType,css)	
+				if url == ""{
+					painc("err")
+				}else{
+					url=""
+				}
 				time.Sleep(2000)	
 			}
 		}
@@ -222,21 +257,37 @@ func (c PptinformationResource) GenPPT(jobid string) string {
 	err = jsonapi.MarshalPayload(filePtr,&arr)
 	filePtr.Close()
 
-	filePtr, _= os.Open("person_info.json")
+	//filePtr,_=os.Open("person_info.json")
+	strbyt, err := ioutil.ReadFile("person_info.json")
 	if err != nil{
 		fmt.Println(err.Error())
 	}
-	request, err := http.NewRequest("POST", "http://192.168.100.195:9999/api/ppt", filePtr)
-	request.Header.Set("Content-Type", "application/json")
-	response, _:= client.Do(request)
-	result, _ := ioutil.ReadAll(response.Body)	
-	os.Remove("person_info.json")
-	url := string(result)
+	str:=string(strbyt)
+	fmt.Println(str)
+
+	bkc, err := bmkafka.GetConfigInstance()
+	if err != nil {
+		panic(err.Error())
+	}
+	topic := "test"
+	bkc.Produce(&topic, str)
+
+	topics := []string{"test"}
+	bkc.SubscribeTopics(topics, c.subscribeFunc)
+
+	// request, err := http.NewRequest("POST", "http://192.168.100.195:9999/api/ppt", filePtr)
+	// request.Header.Set("Content-Type", "application/json")
+	// response, _:= client.Do(request)
+	// result, _ := ioutil.ReadAll(response.Body)	
+	//os.Remove("person_info.json")
+	//url := string(result)
 	s := strings.Split(url, ":")
 	url = s[4][1:len(s[4])-4]
 	return url
 }
-
+func (c PptinformationResource)subscribeFunc(a interface{}) {
+	url=a.(string)
+}
 func (c PptinformationResource) CreateSlider(jobid string ,sliderType string , title string,slider int) string {
 	var arr BmModel.Request
 	var cs BmModel.CreateSlider
