@@ -90,19 +90,7 @@ func (c PptinformationResource) GenPPT(jobid string) string {
 	//record.Set("timings", []int64{123456, 654321})
 	recordByteArr, err := encoder.Encode(record)
 	bkc.Produce(&sendTopic, recordByteArr)
-
-	subscribeTopics := []string{"ppt-driver-topic"}
-	bkc.SubscribeTopics(subscribeTopics, c.subscribeFunc)
-
-	// request, err := http.NewRequest("POST", "http://192.168.100.195:9999/api/ppt", filePtr)
-	// request.Header.Set("Content-Type", "application/json")
-	// response, _:= client.Do(request)
-	// result, _ := ioutil.ReadAll(response.Body)	
-	//os.Remove("person_info.json")
-	//url := string(result)
-	s := strings.Split(url, ":")
-	url = s[4][1:len(s[4])-4]
-	return url
+	return "url"
 }
 func (c PptinformationResource)subscribeFunc(a interface{}) {
 	var bytes[]byte
@@ -131,19 +119,30 @@ func (c PptinformationResource) CreateSlider(jobid string ,sliderType string , t
 	err = jsonapi.MarshalPayload(filePtr,&arr)
 	filePtr.Close()
 
-	filePtr, _= os.Open("person_info.json")
+	strbyt, err := ioutil.ReadFile("person_info.json")
 	if err != nil{
 		fmt.Println(err.Error())
 	}
-	request, err := http.NewRequest("POST", "http://192.168.100.195:9999/api/ppt", filePtr)
-	request.Header.Set("Content-Type", "application/json")
-	response, _:= client.Do(request)
-	result, _ := ioutil.ReadAll(response.Body)	
-	os.Remove("person_info.json")
-	url := string(result)
-	s := strings.Split(url, ":")
-	url = s[4][1:len(s[4])-4]
-	return url
+	str:=string(strbyt)
+	fmt.Println(str)
+	os.Setenv("BM_KAFKA_CONF_HOME", "resource/kafkaconfig.json")
+
+	bkc, err := bmkafka.GetConfigInstance()
+	if err != nil {
+		panic(err.Error())
+	}
+	sendTopic := "ppt-logic-topic"
+	//sendTopic := "test"
+	encoder := kafkaAvro.NewKafkaAvroEncoder(schemaRepositoryUrl)
+	schema, err := avro.ParseSchema(rawMetricsSchema)
+	record := avro.NewGenericRecord(schema)
+	record.Set("id", int64(1))
+	record.Set("data", str)
+	//record.Set("id", int64(3))
+	//record.Set("timings", []int64{123456, 654321})
+	recordByteArr, err := encoder.Encode(record)
+	bkc.Produce(&sendTopic, recordByteArr)
+	return "url"
 }
 
 func (c PptinformationResource) PushText(jobid string ,content string , pos []int,slider int,shapeType string) string {
@@ -166,19 +165,30 @@ func (c PptinformationResource) PushText(jobid string ,content string , pos []in
 	err = jsonapi.MarshalPayload(filePtr,&arr)
 	filePtr.Close()
 
-	filePtr, _= os.Open("person_info.json")
+	strbyt, err := ioutil.ReadFile("person_info.json")
 	if err != nil{
 		fmt.Println(err.Error())
 	}
-	request, err := http.NewRequest("POST", "http://192.168.100.195:9999/api/ppt", filePtr)
-	request.Header.Set("Content-Type", "application/json")
-	response, _:= client.Do(request)
-	result, _ := ioutil.ReadAll(response.Body)	
-	os.Remove("person_info.json")
-	url := string(result)
-	s := strings.Split(url, ":")
-	url = s[4][1:len(s[4])-4]
-	return url
+	str:=string(strbyt)
+	fmt.Println(str)
+	os.Setenv("BM_KAFKA_CONF_HOME", "resource/kafkaconfig.json")
+
+	bkc, err := bmkafka.GetConfigInstance()
+	if err != nil {
+		panic(err.Error())
+	}
+	sendTopic := "ppt-logic-topic"
+	//sendTopic := "test"
+	encoder := kafkaAvro.NewKafkaAvroEncoder(schemaRepositoryUrl)
+	schema, err := avro.ParseSchema(rawMetricsSchema)
+	record := avro.NewGenericRecord(schema)
+	record.Set("id", int64(1))
+	record.Set("data", str)
+	//record.Set("id", int64(3))
+	//record.Set("timings", []int64{123456, 654321})
+	recordByteArr, err := encoder.Encode(record)
+	bkc.Produce(&sendTopic, recordByteArr)
+	return "url"
 }
 
 func (c PptinformationResource) ExcelPush(jobid string ,name string , cells []string) string {
@@ -197,19 +207,30 @@ func (c PptinformationResource) ExcelPush(jobid string ,name string , cells []st
 	err = jsonapi.MarshalPayload(filePtr,&arr)
 	filePtr.Close()
 
-	filePtr, _= os.Open("person_info.json")
+	strbyt, err := ioutil.ReadFile("person_info.json")
 	if err != nil{
 		fmt.Println(err.Error())
 	}
-	request, err := http.NewRequest("POST", "http://192.168.100.195:9999/api/ppt", filePtr)
-	request.Header.Set("Content-Type", "application/json")
-	response, _:= client.Do(request)
-	result, _ := ioutil.ReadAll(response.Body)	
-	os.Remove("person_info.json")
-	url := string(result)
-	s := strings.Split(url, ":")
-	url = s[4][1:len(s[4])-4]
-	return url
+	str:=string(strbyt)
+	fmt.Println(str)
+	os.Setenv("BM_KAFKA_CONF_HOME", "resource/kafkaconfig.json")
+
+	bkc, err := bmkafka.GetConfigInstance()
+	if err != nil {
+		panic(err.Error())
+	}
+	sendTopic := "ppt-logic-topic"
+	//sendTopic := "test"
+	encoder := kafkaAvro.NewKafkaAvroEncoder(schemaRepositoryUrl)
+	schema, err := avro.ParseSchema(rawMetricsSchema)
+	record := avro.NewGenericRecord(schema)
+	record.Set("id", int64(1))
+	record.Set("data", str)
+	//record.Set("id", int64(3))
+	//record.Set("timings", []int64{123456, 654321})
+	recordByteArr, err := encoder.Encode(record)
+	bkc.Produce(&sendTopic, recordByteArr)
+	return "url"
 }
 
 func (c PptinformationResource) Excel2Chart(jobid string ,name string , pos []int,slider int, chartType string,css string) string {
@@ -231,19 +252,30 @@ func (c PptinformationResource) Excel2Chart(jobid string ,name string , pos []in
 	err = jsonapi.MarshalPayload(filePtr,&arr)
 	filePtr.Close()
 
-	filePtr, _= os.Open("person_info.json")
+	strbyt, err := ioutil.ReadFile("person_info.json")
 	if err != nil{
 		fmt.Println(err.Error())
 	}
-	request, err := http.NewRequest("POST", "http://192.168.100.195:9999/api/ppt", filePtr)
-	request.Header.Set("Content-Type", "application/json")
-	response, _:= client.Do(request)
-	result, _ := ioutil.ReadAll(response.Body)	
-	os.Remove("person_info.json")
-	url := string(result)
-	s := strings.Split(url, ":")
-	url = s[4][1:len(s[4])-4]
-	return url
+	str:=string(strbyt)
+	fmt.Println(str)
+	os.Setenv("BM_KAFKA_CONF_HOME", "resource/kafkaconfig.json")
+
+	bkc, err := bmkafka.GetConfigInstance()
+	if err != nil {
+		panic(err.Error())
+	}
+	sendTopic := "ppt-logic-topic"
+	//sendTopic := "test"
+	encoder := kafkaAvro.NewKafkaAvroEncoder(schemaRepositoryUrl)
+	schema, err := avro.ParseSchema(rawMetricsSchema)
+	record := avro.NewGenericRecord(schema)
+	record.Set("id", int64(1))
+	record.Set("data", str)
+	//record.Set("id", int64(3))
+	//record.Set("timings", []int64{123456, 654321})
+	recordByteArr, err := encoder.Encode(record)
+	bkc.Produce(&sendTopic, recordByteArr)
+	return "url"
 }
 
 func (c PptinformationResource) Excel2PPT(jobid string ,name string , pos []int,slider int) string {
@@ -263,19 +295,30 @@ func (c PptinformationResource) Excel2PPT(jobid string ,name string , pos []int,
 	err = jsonapi.MarshalPayload(filePtr,&arr)
 	filePtr.Close()
 
-	filePtr, _= os.Open("person_info.json")
+	strbyt, err := ioutil.ReadFile("person_info.json")
 	if err != nil{
 		fmt.Println(err.Error())
 	}
-	request, err := http.NewRequest("POST", "http://192.168.100.195:9999/api/ppt", filePtr)
-	request.Header.Set("Content-Type", "application/json")
-	response, _:= client.Do(request)
-	result, _ := ioutil.ReadAll(response.Body)	
-	os.Remove("person_info.json")
-	url := string(result)
-	s := strings.Split(url, ":")
-	url = s[4][1:len(s[4])-4]
-	return url
+	str:=string(strbyt)
+	fmt.Println(str)
+	os.Setenv("BM_KAFKA_CONF_HOME", "resource/kafkaconfig.json")
+
+	bkc, err := bmkafka.GetConfigInstance()
+	if err != nil {
+		panic(err.Error())
+	}
+	sendTopic := "ppt-logic-topic"
+	//sendTopic := "test"
+	encoder := kafkaAvro.NewKafkaAvroEncoder(schemaRepositoryUrl)
+	schema, err := avro.ParseSchema(rawMetricsSchema)
+	record := avro.NewGenericRecord(schema)
+	record.Set("id", int64(1))
+	record.Set("data", str)
+	//record.Set("id", int64(3))
+	//record.Set("timings", []int64{123456, 654321})
+	recordByteArr, err := encoder.Encode(record)
+	bkc.Produce(&sendTopic, recordByteArr)
+	return "url"
 }
 
 func (c PptinformationResource) PushPPT(jobid string ) string {
@@ -290,19 +333,30 @@ func (c PptinformationResource) PushPPT(jobid string ) string {
 	err = jsonapi.MarshalPayload(filePtr,&arr)
 	filePtr.Close()
 
-	filePtr, _= os.Open("person_info.json")
+	strbyt, err := ioutil.ReadFile("person_info.json")
 	if err != nil{
 		fmt.Println(err.Error())
 	}
-	request, err := http.NewRequest("POST", "http://192.168.100.195:9999/api/ppt", filePtr)
-	request.Header.Set("Content-Type", "application/json")
-	response, _:= client.Do(request)
-	result, _ := ioutil.ReadAll(response.Body)	
-	os.Remove("person_info.json")
-	url := string(result)
-	s := strings.Split(url, ":")
-	url = s[4][1:len(s[4])-4]
-	return url
+	str:=string(strbyt)
+	fmt.Println(str)
+	os.Setenv("BM_KAFKA_CONF_HOME", "resource/kafkaconfig.json")
+
+	bkc, err := bmkafka.GetConfigInstance()
+	if err != nil {
+		panic(err.Error())
+	}
+	sendTopic := "ppt-logic-topic"
+	//sendTopic := "test"
+	encoder := kafkaAvro.NewKafkaAvroEncoder(schemaRepositoryUrl)
+	schema, err := avro.ParseSchema(rawMetricsSchema)
+	record := avro.NewGenericRecord(schema)
+	record.Set("id", int64(1))
+	record.Set("data", str)
+	//record.Set("id", int64(3))
+	//record.Set("timings", []int64{123456, 654321})
+	recordByteArr, err := encoder.Encode(record)
+	bkc.Produce(&sendTopic, recordByteArr)
+	return "url"
 }
 
 func (c PptinformationResource) GetShape(Shape bson.M,pos *[]int,shapeType *string,formatstr *string,cells *[]string,name *string,css *string) {
@@ -538,6 +592,11 @@ func (c PptinformationResource) GetUrl( result *BmModel.Pptinformation){
 		}
 	}
 	url  = c.PushPPT(uuid)
+	subscribeTopics := []string{"ppt-driver-topic"}
+	bkc.SubscribeTopics(subscribeTopics, c.subscribeFunc)
+
+	s := strings.Split(url, ":")
+	url = s[4][1:len(s[4])-4]
 }
 // FindAll Requests
 func (c PptinformationResource) FindAll(r api2go.Request) (api2go.Responder, error) {
