@@ -3,23 +3,23 @@ package BmResource
 import (
 	//"bytes"
 	"errors"
-	avro "github.com/elodina/go-avro"
+	"fmt"
 	"github.com/PharbersDeveloper/CHC-PPT/BmDataStorage"
 	"github.com/PharbersDeveloper/CHC-PPT/BmModel"
-	"github.com/manyminds/api2go"
-	"net/http"
-	"reflect"
-	"github.com/google/jsonapi"
-	"io/ioutil"
-	"os"
-	"strings"
-	"fmt"
-	bson "gopkg.in/mgo.v2/bson"
-	"time"
-	"regexp"
-	"github.com/hashicorp/go-uuid"
 	"github.com/alfredyang1986/blackmirror/bmkafka"
+	"github.com/elodina/go-avro"
 	kafkaAvro "github.com/elodina/go-kafka-avro"
+	"github.com/google/jsonapi"
+	"github.com/hashicorp/go-uuid"
+	"github.com/manyminds/api2go"
+	"gopkg.in/mgo.v2/bson"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"reflect"
+	"regexp"
+	"strings"
+	"time"
 )
 var url string
 type PptinformationResource struct {
@@ -73,7 +73,6 @@ func (c PptinformationResource) GenPPT(jobid string) string {
 	}
 	str:=string(strbyt)
 	fmt.Println(str)
-	os.Setenv("BM_KAFKA_CONF_HOME", "resource/kafkaconfig.json")
 
 	bkc, err := bmkafka.GetConfigInstance()
 	if err != nil {
@@ -92,11 +91,20 @@ func (c PptinformationResource) GenPPT(jobid string) string {
 	bkc.Produce(&sendTopic, recordByteArr)
 	return "url"
 }
-func (c PptinformationResource)subscribeFunc(a interface{}) {
-	var bytes[]byte
+func (c *PptinformationResource)subscribeFunc(a interface{}) {
+	bytes := a.([]byte)
 	decoder := kafkaAvro.NewKafkaAvroDecoder(schemaRepositoryUrl)
-	decoded, _ := decoder.Decode(bytes)
-	url=decoded.(string)
+	decoded, err := decoder.Decode(bytes)
+	if err != nil {
+		panic(err.Error())
+	}
+	decodedRecord, ok := decoded.(*avro.GenericRecord)
+	if ok {
+		tempUrl := decodedRecord.Get("data").(string)
+		url = tempUrl
+	} else {
+		panic(errors.New("subscribeFunc Error"))
+	}
 }
 func (c PptinformationResource) CreateSlider(jobid string ,sliderType string , title string,slider int) string {
 	var arr BmModel.Request
@@ -110,7 +118,7 @@ func (c PptinformationResource) CreateSlider(jobid string ,sliderType string , t
 	arr.Command="CreateSlider"
 	arr.Jobid=jobid
 	
-	client := http.Client{}
+	//client := http.Client{}
 	filePtr, err := os.Create("person_info.json")
 	if err != nil {
 		fmt.Println("Open file failed [Err:%s]", err.Error())
@@ -125,7 +133,6 @@ func (c PptinformationResource) CreateSlider(jobid string ,sliderType string , t
 	}
 	str:=string(strbyt)
 	fmt.Println(str)
-	os.Setenv("BM_KAFKA_CONF_HOME", "resource/kafkaconfig.json")
 
 	bkc, err := bmkafka.GetConfigInstance()
 	if err != nil {
@@ -157,7 +164,7 @@ func (c PptinformationResource) PushText(jobid string ,content string , pos []in
 	arr.TextSetContent=&cs
 	arr.Command="PushText"
 	arr.Jobid=jobid
-	client := http.Client{}
+	//client := http.Client{}
 	filePtr, err := os.Create("person_info.json")
 	if err != nil {
 		fmt.Println("Open file failed [Err:%s]", err.Error())
@@ -171,7 +178,6 @@ func (c PptinformationResource) PushText(jobid string ,content string , pos []in
 	}
 	str:=string(strbyt)
 	fmt.Println(str)
-	os.Setenv("BM_KAFKA_CONF_HOME", "resource/kafkaconfig.json")
 
 	bkc, err := bmkafka.GetConfigInstance()
 	if err != nil {
@@ -199,7 +205,7 @@ func (c PptinformationResource) ExcelPush(jobid string ,name string , cells []st
 	arr.ExcelPush=&cs
 	arr.Command="ExcelPush"
 	arr.Jobid=jobid
-	client := http.Client{}
+	//client := http.Client{}
 	filePtr, err := os.Create("person_info.json")
 	if err != nil {
 		fmt.Println("Open file failed [Err:%s]", err.Error())
@@ -213,7 +219,6 @@ func (c PptinformationResource) ExcelPush(jobid string ,name string , cells []st
 	}
 	str:=string(strbyt)
 	fmt.Println(str)
-	os.Setenv("BM_KAFKA_CONF_HOME", "resource/kafkaconfig.json")
 
 	bkc, err := bmkafka.GetConfigInstance()
 	if err != nil {
@@ -244,7 +249,7 @@ func (c PptinformationResource) Excel2Chart(jobid string ,name string , pos []in
 	arr.Excel2Chart=&cs
 	arr.Command="Excel2Chart"
 	arr.Jobid=jobid
-	client := http.Client{}
+	//client := http.Client{}
 	filePtr, err := os.Create("person_info.json")
 	if err != nil {
 		fmt.Println("Open file failed [Err:%s]", err.Error())
@@ -258,7 +263,6 @@ func (c PptinformationResource) Excel2Chart(jobid string ,name string , pos []in
 	}
 	str:=string(strbyt)
 	fmt.Println(str)
-	os.Setenv("BM_KAFKA_CONF_HOME", "resource/kafkaconfig.json")
 
 	bkc, err := bmkafka.GetConfigInstance()
 	if err != nil {
@@ -287,7 +291,7 @@ func (c PptinformationResource) Excel2PPT(jobid string ,name string , pos []int,
 	arr.Excel2PPT=&cs
 	arr.Command="Excel2PPT"
 	arr.Jobid=jobid
-	client := http.Client{}
+	//client := http.Client{}
 	filePtr, err := os.Create("person_info.json")
 	if err != nil {
 		fmt.Println("Open file failed [Err:%s]", err.Error())
@@ -301,7 +305,6 @@ func (c PptinformationResource) Excel2PPT(jobid string ,name string , pos []int,
 	}
 	str:=string(strbyt)
 	fmt.Println(str)
-	os.Setenv("BM_KAFKA_CONF_HOME", "resource/kafkaconfig.json")
 
 	bkc, err := bmkafka.GetConfigInstance()
 	if err != nil {
@@ -325,7 +328,6 @@ func (c PptinformationResource) PushPPT(jobid string ) string {
 	var arr BmModel.Request
 	arr.Command="PushPPT"
 	arr.Jobid=jobid
-	client := http.Client{}
 	filePtr, err := os.Create("person_info.json")
 	if err != nil {
 		fmt.Println("Open file failed [Err:%s]", err.Error())
@@ -339,21 +341,17 @@ func (c PptinformationResource) PushPPT(jobid string ) string {
 	}
 	str:=string(strbyt)
 	fmt.Println(str)
-	os.Setenv("BM_KAFKA_CONF_HOME", "resource/kafkaconfig.json")
 
 	bkc, err := bmkafka.GetConfigInstance()
 	if err != nil {
 		panic(err.Error())
 	}
 	sendTopic := "ppt-logic-topic"
-	//sendTopic := "test"
 	encoder := kafkaAvro.NewKafkaAvroEncoder(schemaRepositoryUrl)
 	schema, err := avro.ParseSchema(rawMetricsSchema)
 	record := avro.NewGenericRecord(schema)
 	record.Set("id", int64(1))
 	record.Set("data", str)
-	//record.Set("id", int64(3))
-	//record.Set("timings", []int64{123456, 654321})
 	recordByteArr, err := encoder.Encode(record)
 	bkc.Produce(&sendTopic, recordByteArr)
 	return "url"
@@ -442,14 +440,13 @@ func (c PptinformationResource) GetDatamap(dataMap bson.M,temp*string,contentint
 	*contentints,_=contentsint.([]interface{})
 }
 
-func (c PptinformationResource) GetUrl( result *BmModel.Pptinformation){
+func (c *PptinformationResource) GetUrl( result *BmModel.Pptinformation){
 	var iscreat int
 	var temp string
-	var url string
 	uuid, err := uuid.GenerateUUID()
 	if err != nil {
 		fmt.Println(err)
-		return 
+		return
 	}
 	url = c.GenPPT(uuid)
 	if url == ""{
@@ -457,16 +454,16 @@ func (c PptinformationResource) GetUrl( result *BmModel.Pptinformation){
 	}else{
 		url=""
 	}
-	time.Sleep(2000)
+	//time.Sleep(2000)
 	for i,data:=range result.Data{
 		var contentints []interface{}
-		iscreat=0	
+		iscreat=0
 		dataMap,_:= data.(bson.M)
 		c.GetDatamap(dataMap,&temp,&contentints)
 		tmp,err := c.ChcppttemplateStorage.GetOne(temp)
 		if err != nil {
 			fmt.Println(err)
-			return 
+			return
 		}
 		Shapes:=tmp.Shapes
 		for j,contentint := range contentints{
@@ -484,12 +481,11 @@ func (c PptinformationResource) GetUrl( result *BmModel.Pptinformation){
 				Shape,_:= Shapeint.(bson.M)
 				c.GetShape(Shape,&pos,&shapeType,&formatstr,&cells,&name,&css)
 			}
-			
+
 			content,_:= contentint.(bson.M)
 			c.GetContent(content,formatstr,&txt,&table,&chart)
 			if txt=="end"{
 				url  = c.CreateSlider(uuid,"end","end",i)
-				result.Url = url
 				break
 			}
 			if iscreat==0{
@@ -499,7 +495,7 @@ func (c PptinformationResource) GetUrl( result *BmModel.Pptinformation){
 				}else{
 					url=""
 				}
-				time.Sleep(2000)
+				//time.Sleep(2000)
 				iscreat=1
 			}
 			if temp!=""&&txt!=""{
@@ -509,7 +505,7 @@ func (c PptinformationResource) GetUrl( result *BmModel.Pptinformation){
 				}else{
 					url=""
 				}
-				time.Sleep(2000)
+				//time.Sleep(2000)
 			}else if temp!=""&&table!=""{
 				chcppts,_:=c.ChcpptStorage.GetOne(table)
 				for _,Cellint:=range chcppts.Cells{
@@ -533,7 +529,7 @@ func (c PptinformationResource) GetUrl( result *BmModel.Pptinformation){
 							cells[t]=cells[t]+value
 						}
 					}
-				}		
+				}
 				name=table+temp
 				url  = c.ExcelPush(uuid ,name,cells)
 				if url == ""{
@@ -541,14 +537,14 @@ func (c PptinformationResource) GetUrl( result *BmModel.Pptinformation){
 				}else{
 					url=""
 				}
-				time.Sleep(2000)
+				//time.Sleep(2000)
 				url  = c.Excel2PPT(uuid,name,pos,i)
 				if url == ""{
 					panic("err")
 				}else{
 					url=""
 				}
-				time.Sleep(2000)			
+				//time.Sleep(2000)
 			}else if temp!=""&&chart!=""{
 				chcppts,_:=c.ChcpptStorage.GetOne(chart)
 				for _,Cellint:=range chcppts.Cells{
@@ -572,31 +568,35 @@ func (c PptinformationResource) GetUrl( result *BmModel.Pptinformation){
 							cells[t]=cells[t]+value
 						}
 					}
-				}		
-				name=chart+temp	
+				}
+				name=chart+temp
 				url  = c.ExcelPush(uuid ,name,cells)
 				if url == ""{
 					panic("err")
 				}else{
 					url=""
 				}
-				time.Sleep(2000)
-				url  = c.Excel2Chart(uuid,name,pos,i,shapeType,css)	
+				//time.Sleep(2000)
+				url  = c.Excel2Chart(uuid,name,pos,i,shapeType,css)
 				if url == ""{
 					panic("err")
 				}else{
 					url=""
 				}
-				time.Sleep(2000)	
+				//time.Sleep(2000)
 			}
 		}
 	}
 	url  = c.PushPPT(uuid)
+	bkc, err := bmkafka.GetConfigInstance()
+	if err != nil {
+		panic(err.Error())
+	}
 	subscribeTopics := []string{"ppt-driver-topic"}
-	bkc.SubscribeTopics(subscribeTopics, c.subscribeFunc)
+	timeout := 30 * time.Minute
+	bkc.SubscribeTopicsOnce(subscribeTopics, timeout, c.subscribeFunc)
 
-	s := strings.Split(url, ":")
-	url = s[4][1:len(s[4])-4]
+	result.Url = url
 }
 // FindAll Requests
 func (c PptinformationResource) FindAll(r api2go.Request) (api2go.Responder, error) {
@@ -608,7 +608,7 @@ func (c PptinformationResource) FindAll(r api2go.Request) (api2go.Responder, err
 	if results[0].Url == ""{
 		c.GetUrl(results[0])
 		_= c.PptinformationStorage.Update(*results[0])
-		//time.Sleep(40*time.Second)
+		time.Sleep(40*time.Second)
 	}
 	return &Response{Res: results}, nil
 }
