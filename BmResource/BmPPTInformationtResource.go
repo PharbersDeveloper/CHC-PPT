@@ -3,7 +3,7 @@ package BmResource
 import (
 	//"bytes"
 	"errors"
-	"github.com/elodina/go-avro"
+	avro "github.com/elodina/go-avro"
 	"github.com/PharbersDeveloper/CHC-PPT/BmDataStorage"
 	"github.com/PharbersDeveloper/CHC-PPT/BmModel"
 	"github.com/manyminds/api2go"
@@ -19,6 +19,7 @@ import (
 	"regexp"
 	"github.com/hashicorp/go-uuid"
 	"github.com/alfredyang1986/blackmirror/bmkafka"
+	kafkaAvro "github.com/elodina/go-kafka-avro"
 )
 var url string
 type PptinformationResource struct {
@@ -28,8 +29,9 @@ type PptinformationResource struct {
 	ChcppttemplateStorage         *BmDataStorage.ChcppttemplateStorage
 }
 const (
-	schemaRepositoryUrl = "59.110.31.50:8081"
-	rawMetricsSchema    = `{"namespace": "net.elodina.kafka.metrics","type": "record","name": "PPT","fields": [{"data": "id"},{"include": "timings"}]}`
+	schemaRepositoryUrl = "http://59.110.31.50:8081"
+	rawMetricsSchema    = `{"namespace": "net.elodina.kafka.metrics","type": "record","name": "PptJob","fields": [{"name": "id", "type": "long"},{"name": "data",  "type": "string" }]}`
+	//rawMetricsSchema    = `{"namespace": "net.elodina.kafka.metrics","type": "record","name": "Timings","fields": [{"name": "id", "type": "long"},{"name": "timings",  "type": {"type":"array", "items": "long"} }]}`
 )
 func (c PptinformationResource) NewPptinformationResource(args []BmDataStorage.BmStorage) PptinformationResource {
 	var cs *BmDataStorage.RequestStorage
@@ -56,7 +58,7 @@ func (c PptinformationResource) GenPPT(jobid string) string {
 	var arr BmModel.Request
 	arr.Command="GenPPT"
 	arr.Jobid=jobid
-	client := http.Client{}
+	//client := http.Client{}
 	filePtr, err := os.Create("person_info.json")
 	if err != nil {
 		fmt.Println("Open file failed [Err:%s]", err.Error())
@@ -71,21 +73,26 @@ func (c PptinformationResource) GenPPT(jobid string) string {
 	}
 	str:=string(strbyt)
 	fmt.Println(str)
-	os.Setenv("BM_KAFKA_CONF_HOME", "../resource/kafkaconfig.json")
+	os.Setenv("BM_KAFKA_CONF_HOME", "resource/kafkaconfig.json")
 
 	bkc, err := bmkafka.GetConfigInstance()
 	if err != nil {
 		panic(err.Error())
 	}
-	topic := "test"
-	encoder := NewKafkaAvroEncoder(schemaRepositoryUrl)
+	sendTopic := "ppt-logic-topic"
+	//sendTopic := "test"
+	encoder := kafkaAvro.NewKafkaAvroEncoder(schemaRepositoryUrl)
 	schema, err := avro.ParseSchema(rawMetricsSchema)
 	record := avro.NewGenericRecord(schema)
-	strcode, err := encoder.Encode(record)
-	bkc.Produce(&topic, strcode)
+	record.Set("id", int64(1))
+	record.Set("data", str)
+	//record.Set("id", int64(3))
+	//record.Set("timings", []int64{123456, 654321})
+	recordByteArr, err := encoder.Encode(record)
+	bkc.Produce(&sendTopic, recordByteArr)
 
-	topics := []string{"test1"}
-	bkc.SubscribeTopics(topics, c.subscribeFunc)
+	subscribeTopics := []string{"ppt-driver-topic"}
+	bkc.SubscribeTopics(subscribeTopics, c.subscribeFunc)
 
 	// request, err := http.NewRequest("POST", "http://192.168.100.195:9999/api/ppt", filePtr)
 	// request.Header.Set("Content-Type", "application/json")
@@ -98,9 +105,10 @@ func (c PptinformationResource) GenPPT(jobid string) string {
 	return url
 }
 func (c PptinformationResource)subscribeFunc(a interface{}) {
-	decoder := NewKafkaAvroDecoder(schemaRepositoryUrl)
-	decoded, err := decoder.Decode(bytes)
-	url=a.(string)
+	var bytes[]byte
+	decoder := kafkaAvro.NewKafkaAvroDecoder(schemaRepositoryUrl)
+	decoded, _ := decoder.Decode(bytes)
+	url=decoded.(string)
 }
 func (c PptinformationResource) CreateSlider(jobid string ,sliderType string , title string,slider int) string {
 	var arr BmModel.Request
@@ -391,7 +399,7 @@ func (c PptinformationResource) GetUrl( result *BmModel.Pptinformation){
 	}
 	url = c.GenPPT(uuid)
 	if url == ""{
-		painc("err")
+		panic("err")
 	}else{
 		url=""
 	}
@@ -433,7 +441,7 @@ func (c PptinformationResource) GetUrl( result *BmModel.Pptinformation){
 			if iscreat==0{
 				url  = c.CreateSlider(uuid,tmp.Slider_Type,txt,i)
 				if url == ""{
-					painc("err")
+					panic("err")
 				}else{
 					url=""
 				}
@@ -443,7 +451,7 @@ func (c PptinformationResource) GetUrl( result *BmModel.Pptinformation){
 			if temp!=""&&txt!=""{
 				url=c.PushText(uuid,txt,pos,i,shapeType)
 				if url == ""{
-					painc("err")
+					panic("err")
 				}else{
 					url=""
 				}
@@ -475,14 +483,14 @@ func (c PptinformationResource) GetUrl( result *BmModel.Pptinformation){
 				name=table+temp
 				url  = c.ExcelPush(uuid ,name,cells)
 				if url == ""{
-					painc("err")
+					panic("err")
 				}else{
 					url=""
 				}
 				time.Sleep(2000)
 				url  = c.Excel2PPT(uuid,name,pos,i)
 				if url == ""{
-					painc("err")
+					panic("err")
 				}else{
 					url=""
 				}
@@ -514,14 +522,14 @@ func (c PptinformationResource) GetUrl( result *BmModel.Pptinformation){
 				name=chart+temp	
 				url  = c.ExcelPush(uuid ,name,cells)
 				if url == ""{
-					painc("err")
+					panic("err")
 				}else{
 					url=""
 				}
 				time.Sleep(2000)
 				url  = c.Excel2Chart(uuid,name,pos,i,shapeType,css)	
 				if url == ""{
-					painc("err")
+					panic("err")
 				}else{
 					url=""
 				}
