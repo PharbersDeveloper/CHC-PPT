@@ -139,13 +139,17 @@ daemons:
 - name: BmMongodbDaemon
   method: NewMongoDBDaemon
   args:
-    host: 192.168.100.176
+    host: primary
+#    host: 192.168.100.176
     port: 27017
+    user: pharbers
+    pass: pharbers2019
     database: pharbers-aggrate-data
 - name: BmRedisDaemon
   method: NewRedisDBDaemon
   args:
-    host: 192.168.100.174
+#    host: 192.168.100.174
+    host: redis
     port: 6379
-    password:
+    password: pharbers
     database: 0

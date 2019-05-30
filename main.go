@@ -2,15 +2,13 @@ package main
 
 import (
 	"fmt"
-	"net/http"
-
 	"github.com/PharbersDeveloper/CHC-PPT/BmFactory"
+	"github.com/PharbersDeveloper/CHC-PPT/BmMaxDefine"
 	"github.com/alfredyang1986/BmServiceDef/BmApiResolver"
 	"github.com/alfredyang1986/BmServiceDef/BmConfig"
-	"github.com/PharbersDeveloper/CHC-PPT/BmMaxDefine"
 	"github.com/julienschmidt/httprouter"
 	"github.com/manyminds/api2go"
-	//"os"
+	"net/http"
 )
 
 func main() {
@@ -22,9 +20,12 @@ func main() {
 	var pod = BmMaxDefine.Pod{ Name: "swl test", Factory:fac }
 	pod.RegisterSerFromYAML("resource/def.yaml")
 
+	//本地测试
+	//os.Setenv("BM_HOME", ".")
+	//os.Setenv("BM_KAFKA_CONF_HOME", "resource/kafkaconfig.json")
+
 	var bmRouter BmConfig.BmRouterConfig
 	bmRouter.GenerateConfig("BM_HOME")
-	bmRouter.Port = "20199"
 	addr := bmRouter.Host + ":" + bmRouter.Port
 	fmt.Println("Listening on ", addr)
 	api := api2go.NewAPIWithResolver(version, &BmApiResolver.RequestURL{Addr: addr})

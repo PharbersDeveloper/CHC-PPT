@@ -31,7 +31,6 @@ type PptinformationResource struct {
 const (
 	schemaRepositoryUrl = "http://59.110.31.50:8081"
 	rawMetricsSchema    = `{"namespace": "net.elodina.kafka.metrics","type": "record","name": "PptJob","fields": [{"name": "id", "type": "long"},{"name": "data",  "type": "string" }]}`
-	//rawMetricsSchema    = `{"namespace": "net.elodina.kafka.metrics","type": "record","name": "Timings","fields": [{"name": "id", "type": "long"},{"name": "timings",  "type": {"type":"array", "items": "long"} }]}`
 )
 func (c PptinformationResource) NewPptinformationResource(args []BmDataStorage.BmStorage) PptinformationResource {
 	var cs *BmDataStorage.RequestStorage
@@ -85,8 +84,6 @@ func (c PptinformationResource) GenPPT(jobid string) string {
 	record := avro.NewGenericRecord(schema)
 	record.Set("id", int64(1))
 	record.Set("data", str)
-	//record.Set("id", int64(3))
-	//record.Set("timings", []int64{123456, 654321})
 	recordByteArr, err := encoder.Encode(record)
 	bkc.Produce(&sendTopic, recordByteArr)
 	return "url"
@@ -477,6 +474,9 @@ func (c *PptinformationResource) GetUrl( result *BmModel.Pptinformation){
 			var cells []string
 			var formatstr string
 			if len(Shapes)>0{
+				if j >= len(Shapes) {
+					panic("out of index !!!")
+				}
 				Shapeint,_:=Shapes[j].(interface{})
 				Shape,_:= Shapeint.(bson.M)
 				c.GetShape(Shape,&pos,&shapeType,&formatstr,&cells,&name,&css)
